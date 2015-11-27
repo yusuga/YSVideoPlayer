@@ -484,6 +484,7 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 
 - (void)cleanPlayer
 {
+    [self.KVOController unobserveAll];
     [self removePlayerTimeObserver];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
