@@ -90,7 +90,7 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
         button.imageEdgeInsets = UIEdgeInsetsMake(1., -contentMargin, 0., contentMargin);
         button.titleEdgeInsets = UIEdgeInsetsMake(0., contentMargin, 0., -contentMargin);
         button.layer.cornerRadius = self.errorButton.bounds.size.height/2.;
-        button.layer.borderWidth = 1./[UIScreen mainScreen].scale;
+        button.layer.borderWidth = 1.;
         button.layer.borderColor = [self.errorButton titleColorForState:UIControlStateNormal].CGColor;
         
         button.transform = CGAffineTransformMakeScale(-1., 1.);
