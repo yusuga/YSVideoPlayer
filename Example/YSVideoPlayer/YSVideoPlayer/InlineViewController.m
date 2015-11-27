@@ -7,14 +7,15 @@
 //
 
 #import "InlineViewController.h"
-#import "YSEmbeddedVideoPlayer.h"
+#import "YSEmbedVideoPlayer.h"
 
 @interface InlineViewController ()
 
 @property (weak, nonatomic) IBOutlet UIView *inlineView;
-@property (nonatomic) YSEmbeddedVideoPlayer *player;
-@property (weak, nonatomic) IBOutlet UISwitch *bipBopSwitch;
+@property (nonatomic) YSEmbedVideoPlayer *player;
+
 @property (weak, nonatomic) IBOutlet UISwitch *repeatSwitch;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *videoControl;
 
 @end
 
@@ -37,13 +38,25 @@
     if (self.player) return;
     
     NSString *URLStr;
-    if (self.bipBopSwitch.on) {
-        URLStr = @"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
-    } else {
-        URLStr = @"https://video.twimg.com/ext_tw_video/560070131976392705/pu/pl/r1kgzh5PmLgium3-.m3u8";
+    switch (self.videoControl.selectedSegmentIndex) {
+        case 0:
+            URLStr = @"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
+            break;
+        case 1:
+            URLStr = @"https://video.twimg.com/ext_tw_video/560070131976392705/pu/pl/r1kgzh5PmLgium3-.m3u8";
+            break;
+        case 2:
+            URLStr = @"https://video.twimg.com/ext_tw_video/560070131976392705/pu/vid/1280x720/c4E56sl91ZB7cpYi.mp4";
+            break;
+        case 3:
+            URLStr = @"https://16-lvl3-pdl.vimeocdn.com/01/2540/3/87701971/230891258.mp4";
+            break;
+        default:
+            abort();
+            break;
     }
     
-    YSEmbeddedVideoPlayer *player = [YSEmbeddedVideoPlayer playerWithURLString:URLStr
+    YSEmbedVideoPlayer *player = [YSEmbedVideoPlayer playerWithURLString:URLStr
                                                                     repeat:self.repeatSwitch.on];
     
     player.view.frame = self.inlineView.bounds;

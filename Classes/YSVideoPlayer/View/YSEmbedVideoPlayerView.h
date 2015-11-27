@@ -1,5 +1,5 @@
 //
-//  YSEmbeddedVideoPlayerView.h
+//  YSEmbedVideoPlayerView.h
 //  YSVideoPlayer
 //
 //  Created by Yu Sugawara on 2015/11/26.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 @import AVFoundation;
 
-@interface YSEmbeddedVideoPlayerView : UIView
+@interface YSEmbedVideoPlayerView : UIView
 
 - (void)setPlayer:(AVPlayer *)player;
 - (void)setVideoGravity:(NSString *)videoGravity;

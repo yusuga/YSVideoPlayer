@@ -1,10 +1,24 @@
 PODS:
   - KVOController (1.0.3)
+  - RMUniversalAlert (0.7):
+    - RMUniversalAlert/Core (= 0.7)
+  - RMUniversalAlert/Core (0.7):
+    - UIActionSheet+Blocks (>= 0.9)
+    - UIAlertController+Blocks (>= 0.9)
+    - UIAlertView+Blocks (>= 0.9)
+  - UIActionSheet+Blocks (0.9)
+  - UIAlertController+Blocks (0.9)
+  - UIAlertView+Blocks (0.9)
 
 DEPENDENCIES:
   - KVOController
+  - RMUniversalAlert
 
 SPEC CHECKSUMS:
   KVOController: 9fd8f0343670994e4b6f9f0b31f5a45663f3e1cf
+  RMUniversalAlert: bce2ca406c24065b76665725c83e48006e8f65f8
+  UIActionSheet+Blocks: e180b7dad0a721ab7f212ac9742af799008bb358
+  UIAlertController+Blocks: b48c673ff60726da468b32ab21bbc7683512d45b
+  UIAlertView+Blocks: a46c99c5144f6c5dbc7d62fd2a0678daceec89a3
 
 COCOAPODS: 0.39.0

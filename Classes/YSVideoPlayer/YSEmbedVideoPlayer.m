@@ -1,15 +1,16 @@
 //
-//  YSEmbeddedVideoPlayer.m
+//  YSEmbedVideoPlayer.m
 //  YSVideoPlayer
 //
 //  Created by Yu Sugawara on 2015/11/25.
 //  Copyright © 2015年 Yu Sugawara. All rights reserved.
 //
 
-#import "YSEmbeddedVideoPlayer.h"
+#import "YSEmbedVideoPlayer.h"
 @import AVFoundation;
 @import CoreText;
 #import <KVOController/FBKVOController.h>
+#import <RMUniversalAlert/RMUniversalAlert.h>
 #import "YSVideoPlayerStyleKit.h"
 
 typedef NS_ENUM(NSInteger, PlayerStatus) {
@@ -21,10 +22,11 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     PlayerStatusError,
 };
 
-@interface YSEmbeddedVideoPlayer ()
+@interface YSEmbedVideoPlayer ()
 
 @property (weak, nonatomic) IBOutlet UIView *activityIndicatorContainer;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
+@property (weak, nonatomic) IBOutlet UIButton *errorButton;
 
 @property (weak, nonatomic) IBOutlet UIView *controlsView;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
@@ -33,7 +35,7 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 
 @property (copy, nonatomic) NSString *URLString;
-@property (weak, nonatomic, readwrite) IBOutlet YSEmbeddedVideoPlayerView *playerView;
+@property (weak, nonatomic, readwrite) IBOutlet YSEmbedVideoPlayerView *playerView;
 @property (nonatomic) AVPlayer *player;
 @property (nonatomic) BOOL repeat;
 @property (nonatomic) float restoreAfterScrubbingRate;
@@ -45,19 +47,19 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 
 @end
 
-@implementation YSEmbeddedVideoPlayer
+@implementation YSEmbedVideoPlayer
 
-+ (YSEmbeddedVideoPlayer *)playerWithURLString:(NSString *)URLString
++ (YSEmbedVideoPlayer *)playerWithURLString:(NSString *)URLString
 {
     return [self playerWithURLString:URLString
                               repeat:NO];
 }
 
-+ (YSEmbeddedVideoPlayer *)playerWithURLString:(NSString *)URLString
++ (YSEmbedVideoPlayer *)playerWithURLString:(NSString *)URLString
                                       repeat:(BOOL)repeat
 {
     UIStoryboard *sb = [UIStoryboard storyboardWithName:NSStringFromClass([self class]) bundle:nil];
-    YSEmbeddedVideoPlayer *player = [sb instantiateInitialViewController];
+    YSEmbedVideoPlayer *player = [sb instantiateInitialViewController];
     player.URLString = URLString;
     player.repeat = repeat;
     return player;
@@ -74,7 +76,27 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     NSDictionary * fontAttributes = @{UIFontDescriptorFeatureSettingsAttribute: @[@{UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
                                                                                     UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]};
     self.timeLabel.font = [UIFont fontWithDescriptor:[[self.timeLabel.font fontDescriptor] fontDescriptorByAddingAttributes:fontAttributes]
-                                                size:self.timeLabel.font.pointSize];    
+                                                size:self.timeLabel.font.pointSize];
+    
+    {
+        CGFloat horizontalSpace = 14.;
+        
+        UIButton *button = self.errorButton;
+        [button setImage:[YSVideoPlayerStyleKit imageOfReload] forState:UIControlStateNormal];
+        button.contentEdgeInsets = UIEdgeInsetsMake(5., horizontalSpace, 5., horizontalSpace);
+        [button sizeToFit];
+        
+        CGFloat contentMargin = 2.;
+        button.imageEdgeInsets = UIEdgeInsetsMake(1., -contentMargin, 0., contentMargin);
+        button.titleEdgeInsets = UIEdgeInsetsMake(0., contentMargin, 0., -contentMargin);
+        button.layer.cornerRadius = self.errorButton.bounds.size.height/2.;
+        button.layer.borderWidth = 1./[UIScreen mainScreen].scale;
+        button.layer.borderColor = [self.errorButton titleColorForState:UIControlStateNormal].CGColor;
+        
+        button.transform = CGAffineTransformMakeScale(-1., 1.);
+        button.titleLabel.transform = CGAffineTransformMakeScale(-1., 1.);
+        button.imageView.transform = CGAffineTransformMakeScale(-1., 1.);
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -248,14 +270,16 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
             __weak typeof(self) wself = self;
         
         [self.player seekToTime:CMTimeMakeWithSeconds(time, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
-            if (time == self.totalTime && wself.playerStatus != PlayerStatusEnd) {
+            if (finished || time == wself.totalTime) {
+                [wself activityIndicatorViewShown:NO];
+            } else {
+                [wself activityIndicatorViewShown:YES];
+            }
+            
+            if (time == wself.totalTime && wself.playerStatus != PlayerStatusEnd) {
                 wself.playerStatus = PlayerStatusEnd;
             }
         }];
-        
-        if (time < self.totalTime) {
-            [self activityIndicatorViewShown:YES];
-        }
     }
 }
 
@@ -308,7 +332,7 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 
 #pragma mark - Player View
 
-- (YSEmbeddedVideoPlayerView *)playerView
+- (YSEmbedVideoPlayerView *)playerView
 {
     if (!self.isViewLoaded) [self view];
     return _playerView;
@@ -339,10 +363,14 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
                                  options:NSKeyValueObservingOptionNew
                                    block:^(id observer, id object, NSDictionary *change)
              {
-                 NSInteger status = [change[NSKeyValueChangeNewKey] integerValue];
+                 AVPlayerItemStatus status = [change[NSKeyValueChangeNewKey] integerValue];
                  
                  switch (status) {
-                     case AVPlayerStatusReadyToPlay:
+                     default:
+                     case AVPlayerItemStatusUnknown:
+                         wself.playerStatus = PlayerStatusNone;
+                         break;
+                     case AVPlayerItemStatusReadyToPlay:
                          [wself activityIndicatorViewShown:NO];
                          
                          if (!wself.scrubber.tracking && wself.playerStatus != PlayerStatusPause) {
@@ -351,9 +379,21 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
                              wself.playerStatus = PlayerStatusPlay;
                          }
                          break;
-                     default:
+                     case AVPlayerItemStatusFailed:
+                     {
+                         AVPlayerItem *item = (AVPlayerItem *)object;
+                         if ([item isKindOfClass:[AVPlayerItem class]]) {
+                             [RMUniversalAlert showAlertInViewController:wself
+                                                               withTitle:item.error.localizedDescription
+                                                                 message:item.error.localizedFailureReason
+                                                       cancelButtonTitle:@"OK"
+                                                  destructiveButtonTitle:nil
+                                                       otherButtonTitles:nil
+                                                                tapBlock:nil];
+                         }
                          wself.playerStatus = PlayerStatusError;
                          break;
+                     }
                  }
              }];
             [wself.KVOController observe:wself.player
@@ -389,45 +429,50 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     
     switch (playerStatus) {
         case PlayerStatusNone:
-            [self removePlayerTimeObserver];
-            [[NSNotificationCenter defaultCenter] removeObserver:self];
-            [NSObject cancelPreviousPerformRequestsWithTarget:self];
-            
             [self activityIndicatorViewShown:NO];
+            self.errorButton.hidden = YES;
             self.playerView.hidden = YES;
             [self contolsViewShown:NO animated:NO];
-            self.scrubber.enabled = NO;
-            [self.player pause];
-            self.player = nil;
             
+            [self cleanPlayer];
             return;
         case PlayerStatusWait:
-            self.scrubber.enabled = NO;
-            self.playerView.hidden = YES;
             [self activityIndicatorViewShown:YES];
+            self.errorButton.hidden = YES;
+            self.playerView.hidden = YES;
+            [self contolsViewShown:NO animated:NO];
+
             break;
         case PlayerStatusPlay:
         {
-            self.scrubber.enabled = YES;
-            self.playerView.hidden = NO;
             [self activityIndicatorViewShown:NO];
+            self.errorButton.hidden = YES;
+            self.playerView.hidden = NO;
+
             [self.player play];
             
             [self hideContolsViewAfterDelay];
             break;
         }
         case PlayerStatusPause:
-            self.scrubber.enabled = YES;
+            self.errorButton.hidden = YES;
+            
             [self.player pause];
             break;
         case PlayerStatusEnd:
         {
             [self activityIndicatorViewShown:NO];
+            self.errorButton.hidden = YES;
             [self contolsViewShown:YES animated:YES];
             break;
         }
         case PlayerStatusError:
-            self.scrubber.enabled = NO;
+            [self activityIndicatorViewShown:NO];
+            self.errorButton.hidden = NO;
+            self.playerView.hidden = YES;
+            [self contolsViewShown:NO animated:NO];
+            
+            [self cleanPlayer];
             break;
         default:
             NSAssert(false, @"Unsupported playerStatus = %zd", playerStatus);
@@ -435,6 +480,16 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     }
     
     [self syncControlButton];
+}
+
+- (void)cleanPlayer
+{
+    [self removePlayerTimeObserver];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    
+    [self.player pause];
+    self.player = nil;
 }
 
 - (BOOL)isPlaying
@@ -475,6 +530,13 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
         [self.player removeTimeObserver:self.timeObserver];
         self.timeObserver = nil;
     }
+}
+
+#pragma mark - Error
+
+- (IBAction)errorButtonClicked:(id)sender
+{
+    [self createPlayer];
 }
 
 #pragma mark - Notification

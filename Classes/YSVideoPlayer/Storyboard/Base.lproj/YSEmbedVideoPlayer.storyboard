@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9060" systemVersion="15B42" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Osq-dd-17A">
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
     </dependencies>
     <scenes>
-        <!--Embedded Video Player-->
+        <!--Embed Video Player-->
         <scene sceneID="ijH-rj-hd4">
             <objects>
-                <viewController id="Osq-dd-17A" customClass="YSEmbeddedVideoPlayer" sceneMemberID="viewController">
+                <viewController id="Osq-dd-17A" customClass="YSEmbedVideoPlayer" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="xFU-hv-n5s"/>
                         <viewControllerLayoutGuide type="bottom" id="52O-nh-iJf"/>
@@ -16,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MWl-fB-5J1" customClass="YSEmbeddedVideoPlayerView">
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MWl-fB-5J1" customClass="YSEmbedVideoPlayerView">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a3w-y2-gCs" userLabel="Controls View">
@@ -80,7 +81,7 @@
                                     </view>
                                 </subviews>
                                 <animations/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstItem="a3w-y2-gCs" firstAttribute="leading" secondItem="MWl-fB-5J1" secondAttribute="leading" id="2sj-BB-8rb"/>
@@ -122,6 +123,18 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Eh-Pq-l8i">
+                                <rect key="frame" x="275.5" y="285" width="49" height="30"/>
+                                <animations/>
+                                <color key="backgroundColor" red="1" green="0.11372549019607843" blue="0.13725490196078433" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <state key="normal" title="ERROR">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="errorButtonClicked:" destination="Osq-dd-17A" eventType="touchUpInside" id="Oxz-JC-RUq"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -129,6 +142,8 @@
                             <constraint firstItem="10f-hQ-Jj1" firstAttribute="centerX" secondItem="DnU-H2-Gfg" secondAttribute="centerX" id="AQ9-XN-otN"/>
                             <constraint firstAttribute="trailing" secondItem="MWl-fB-5J1" secondAttribute="trailing" id="BQe-4d-qAR"/>
                             <constraint firstItem="MWl-fB-5J1" firstAttribute="top" secondItem="DnU-H2-Gfg" secondAttribute="top" id="OCd-a4-aA8"/>
+                            <constraint firstItem="2Eh-Pq-l8i" firstAttribute="centerY" secondItem="DnU-H2-Gfg" secondAttribute="centerY" id="SfO-3X-BRu"/>
+                            <constraint firstItem="2Eh-Pq-l8i" firstAttribute="centerX" secondItem="DnU-H2-Gfg" secondAttribute="centerX" id="YsT-Uh-duN"/>
                             <constraint firstItem="52O-nh-iJf" firstAttribute="top" secondItem="MWl-fB-5J1" secondAttribute="bottom" id="mZU-5h-Wal"/>
                             <constraint firstItem="10f-hQ-Jj1" firstAttribute="centerY" secondItem="DnU-H2-Gfg" secondAttribute="centerY" id="rRv-ts-Wgf"/>
                             <constraint firstItem="MWl-fB-5J1" firstAttribute="leading" secondItem="DnU-H2-Gfg" secondAttribute="leading" id="zM7-Nz-L4D"/>
@@ -139,6 +154,7 @@
                         <outlet property="activityIndicatorView" destination="Rbg-a9-3cY" id="AfM-HZ-H0w"/>
                         <outlet property="controlButton" destination="83M-FS-o5c" id="DrJ-bR-MAU"/>
                         <outlet property="controlsView" destination="a3w-y2-gCs" id="glp-d7-ILn"/>
+                        <outlet property="errorButton" destination="2Eh-Pq-l8i" id="eIg-kZ-IO3"/>
                         <outlet property="playerView" destination="MWl-fB-5J1" id="mSX-mI-oNq"/>
                         <outlet property="scrubber" destination="Xvz-nG-2DB" id="YSk-XJ-z0K"/>
                         <outlet property="timeLabel" destination="JB4-xm-j36" id="Mmb-5a-292"/>

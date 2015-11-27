@@ -18,12 +18,12 @@
 		B84FE1331C0719E700366011 /* MPMoviePlayerController+YSVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE1211C0719E700366011 /* MPMoviePlayerController+YSVideoPlayer.m */; };
 		B84FE1341C0719E700366011 /* YSVideoPlayerStyleKit.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE1241C0719E700366011 /* YSVideoPlayerStyleKit.m */; };
 		B84FE1351C0719E700366011 /* YSVideoPlayerWeakObject.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE1271C0719E700366011 /* YSVideoPlayerWeakObject.m */; };
-		B84FE1361C0719E700366011 /* YSEmbeddedVideoPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE12A1C0719E700366011 /* YSEmbeddedVideoPlayerView.m */; };
+		B84FE1361C0719E700366011 /* YSEmbedVideoPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE12A1C0719E700366011 /* YSEmbedVideoPlayerView.m */; };
 		B84FE1371C0719E700366011 /* YSVideoSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE12C1C0719E700366011 /* YSVideoSlider.m */; };
-		B84FE1381C0719E700366011 /* YSEmbeddedVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE12E1C0719E700366011 /* YSEmbeddedVideoPlayer.m */; };
+		B84FE1381C0719E700366011 /* YSEmbedVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE12E1C0719E700366011 /* YSEmbedVideoPlayer.m */; };
 		B84FE13A1C0719E700366011 /* YSVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE1311C0719E700366011 /* YSVideoPlayer.m */; };
-		B84FE13D1C071A0600366011 /* YSEmbeddedVideoPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B84FE13C1C071A0600366011 /* YSEmbeddedVideoPlayer.storyboard */; };
 		B8662B1B1C060D5000C9E7F2 /* InlineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B8662B1A1C060D5000C9E7F2 /* InlineViewController.m */; };
+		B86B3D6B1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B86B3D6D1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,17 +47,18 @@
 		B84FE1241C0719E700366011 /* YSVideoPlayerStyleKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSVideoPlayerStyleKit.m; sourceTree = "<group>"; };
 		B84FE1261C0719E700366011 /* YSVideoPlayerWeakObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSVideoPlayerWeakObject.h; sourceTree = "<group>"; };
 		B84FE1271C0719E700366011 /* YSVideoPlayerWeakObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSVideoPlayerWeakObject.m; sourceTree = "<group>"; };
-		B84FE1291C0719E700366011 /* YSEmbeddedVideoPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSEmbeddedVideoPlayerView.h; sourceTree = "<group>"; };
-		B84FE12A1C0719E700366011 /* YSEmbeddedVideoPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSEmbeddedVideoPlayerView.m; sourceTree = "<group>"; };
+		B84FE1291C0719E700366011 /* YSEmbedVideoPlayerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSEmbedVideoPlayerView.h; sourceTree = "<group>"; };
+		B84FE12A1C0719E700366011 /* YSEmbedVideoPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSEmbedVideoPlayerView.m; sourceTree = "<group>"; };
 		B84FE12B1C0719E700366011 /* YSVideoSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSVideoSlider.h; sourceTree = "<group>"; };
 		B84FE12C1C0719E700366011 /* YSVideoSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSVideoSlider.m; sourceTree = "<group>"; };
-		B84FE12D1C0719E700366011 /* YSEmbeddedVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSEmbeddedVideoPlayer.h; sourceTree = "<group>"; };
-		B84FE12E1C0719E700366011 /* YSEmbeddedVideoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSEmbeddedVideoPlayer.m; sourceTree = "<group>"; };
+		B84FE12D1C0719E700366011 /* YSEmbedVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSEmbedVideoPlayer.h; sourceTree = "<group>"; };
+		B84FE12E1C0719E700366011 /* YSEmbedVideoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSEmbedVideoPlayer.m; sourceTree = "<group>"; };
 		B84FE1301C0719E700366011 /* YSVideoPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSVideoPlayer.h; sourceTree = "<group>"; };
 		B84FE1311C0719E700366011 /* YSVideoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSVideoPlayer.m; sourceTree = "<group>"; };
-		B84FE13C1C071A0600366011 /* YSEmbeddedVideoPlayer.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = YSEmbeddedVideoPlayer.storyboard; sourceTree = "<group>"; };
 		B8662B191C060D5000C9E7F2 /* InlineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InlineViewController.h; sourceTree = "<group>"; };
 		B8662B1A1C060D5000C9E7F2 /* InlineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InlineViewController.m; sourceTree = "<group>"; };
+		B86B3D6C1C082B1C002FB646 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/YSEmbedVideoPlayer.storyboard; sourceTree = "<group>"; };
+		B86B3D6E1C082B33002FB646 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/YSEmbedVideoPlayer.strings; sourceTree = "<group>"; };
 		B8C59ADFFC70BB9C72624945 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -140,8 +141,8 @@
 			children = (
 				B84FE1301C0719E700366011 /* YSVideoPlayer.h */,
 				B84FE1311C0719E700366011 /* YSVideoPlayer.m */,
-				B84FE12D1C0719E700366011 /* YSEmbeddedVideoPlayer.h */,
-				B84FE12E1C0719E700366011 /* YSEmbeddedVideoPlayer.m */,
+				B84FE12D1C0719E700366011 /* YSEmbedVideoPlayer.h */,
+				B84FE12E1C0719E700366011 /* YSEmbedVideoPlayer.m */,
 				B84FE13B1C071A0600366011 /* Storyboard */,
 				B84FE1281C0719E700366011 /* View */,
 				B84FE1251C0719E700366011 /* Model */,
@@ -184,8 +185,8 @@
 		B84FE1281C0719E700366011 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				B84FE1291C0719E700366011 /* YSEmbeddedVideoPlayerView.h */,
-				B84FE12A1C0719E700366011 /* YSEmbeddedVideoPlayerView.m */,
+				B84FE1291C0719E700366011 /* YSEmbedVideoPlayerView.h */,
+				B84FE12A1C0719E700366011 /* YSEmbedVideoPlayerView.m */,
 				B84FE12B1C0719E700366011 /* YSVideoSlider.h */,
 				B84FE12C1C0719E700366011 /* YSVideoSlider.m */,
 			);
@@ -195,7 +196,7 @@
 		B84FE13B1C071A0600366011 /* Storyboard */ = {
 			isa = PBXGroup;
 			children = (
-				B84FE13C1C071A0600366011 /* YSEmbeddedVideoPlayer.storyboard */,
+				B86B3D6D1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard */,
 			);
 			path = Storyboard;
 			sourceTree = "<group>";
@@ -262,7 +263,7 @@
 			files = (
 				B81980391BFF3E4D0069A5E0 /* LaunchScreen.storyboard in Resources */,
 				B81980361BFF3E4D0069A5E0 /* Assets.xcassets in Resources */,
-				B84FE13D1C071A0600366011 /* YSEmbeddedVideoPlayer.storyboard in Resources */,
+				B86B3D6B1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard in Resources */,
 				B81980341BFF3E4D0069A5E0 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -323,7 +324,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B84FE1341C0719E700366011 /* YSVideoPlayerStyleKit.m in Sources */,
-				B84FE1381C0719E700366011 /* YSEmbeddedVideoPlayer.m in Sources */,
+				B84FE1381C0719E700366011 /* YSEmbedVideoPlayer.m in Sources */,
 				B84FE1321C0719E700366011 /* AVPlayerItem+YSVideoPlayer.m in Sources */,
 				B819802E1BFF3E4D0069A5E0 /* AppDelegate.m in Sources */,
 				B84FE1351C0719E700366011 /* YSVideoPlayerWeakObject.m in Sources */,
@@ -333,7 +334,7 @@
 				B81980461BFF441F0069A5E0 /* TableViewController.m in Sources */,
 				B8662B1B1C060D5000C9E7F2 /* InlineViewController.m in Sources */,
 				B84FE1331C0719E700366011 /* MPMoviePlayerController+YSVideoPlayer.m in Sources */,
-				B84FE1361C0719E700366011 /* YSEmbeddedVideoPlayerView.m in Sources */,
+				B84FE1361C0719E700366011 /* YSEmbedVideoPlayerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,6 +355,15 @@
 				B81980381BFF3E4D0069A5E0 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		B86B3D6D1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B86B3D6C1C082B1C002FB646 /* Base */,
+				B86B3D6E1C082B33002FB646 /* ja */,
+			);
+			name = YSEmbedVideoPlayer.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
