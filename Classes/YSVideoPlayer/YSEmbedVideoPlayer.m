@@ -9,20 +9,49 @@
 #import "YSEmbedVideoPlayer.h"
 @import AVFoundation;
 @import CoreText;
-#import <KVOController/FBKVOController.h>
+#import <AFNetworking/AFNetworking.h>
 #import <RMUniversalAlert/RMUniversalAlert.h>
+#import <KVOController/FBKVOController.h>
 #import "YSVideoPlayerStyleKit.h"
 
 typedef NS_ENUM(NSInteger, PlayerStatus) {
     PlayerStatusNone,
     PlayerStatusWait,
     PlayerStatusPlay,
+    PlayerStatusBufferLoading,
     PlayerStatusPause,
     PlayerStatusEnd,
     PlayerStatusError,
 };
+static NSString *NSStringFromPlayerStatus(PlayerStatus status)
+{
+    switch (status) {
+        case PlayerStatusNone:
+            return @"PlayerStatusNone";
+        case PlayerStatusWait:
+            return @"PlayerStatusWait";
+        case PlayerStatusPlay:
+            return @"PlayerStatusPlay";
+        case PlayerStatusBufferLoading:
+            return @"PlayerStatusBufferLoading";
+        case PlayerStatusPause:
+            return @"PlayerStatusPause";
+        case PlayerStatusEnd:
+            return @"PlayerStatusEnd";
+        case PlayerStatusError:
+            return @"PlayerStatusError";
+            break;
+        default:
+            return [NSString stringWithFormat:@"Unknown playerStatus(%zd)", status];
+            break;
+    }
+}
 
-@interface YSEmbedVideoPlayer ()
+static NSString * const kDownloadSchemeSuffix = @"-download";
+static NSString * const kExtensionMP4 = @"mp4";
+static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
+
+@interface YSEmbedVideoPlayer () <AVAssetResourceLoaderDelegate>
 
 @property (weak, nonatomic) IBOutlet UIView *activityIndicatorContainer;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
@@ -45,6 +74,9 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 @property (nonatomic) PlayerStatus playerStatus;
 @property (nonatomic) id timeObserver;
 
+@property (nonatomic) NSURLSessionDownloadTask *downloadTask;
+@property (nonatomic) NSError *downloadError;
+
 @end
 
 @implementation YSEmbedVideoPlayer
@@ -56,7 +88,7 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 }
 
 + (YSEmbedVideoPlayer *)playerWithURLString:(NSString *)URLString
-                                      repeat:(BOOL)repeat
+                                     repeat:(BOOL)repeat
 {
     UIStoryboard *sb = [UIStoryboard storyboardWithName:NSStringFromClass([self class]) bundle:nil];
     YSEmbedVideoPlayer *player = [sb instantiateInitialViewController];
@@ -65,18 +97,22 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     return player;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillResignActiveNotification:)
+                                                     name:UIApplicationWillResignActiveNotification
+                                                   object:nil];
+    }
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    /*
-     *  iOS 9 Proportional Numbers
-     *  http://useyourloaf.com/blog/ios-9-proportional-numbers.html
-     */
-    NSDictionary * fontAttributes = @{UIFontDescriptorFeatureSettingsAttribute: @[@{UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
-                                                                                    UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]};
-    self.timeLabel.font = [UIFont fontWithDescriptor:[[self.timeLabel.font fontDescriptor] fontDescriptorByAddingAttributes:fontAttributes]
-                                                size:self.timeLabel.font.pointSize];
+    /* Error Button */
     
     {
         CGFloat horizontalSpace = 14.;
@@ -97,6 +133,25 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
         button.titleLabel.transform = CGAffineTransformMakeScale(-1., 1.);
         button.imageView.transform = CGAffineTransformMakeScale(-1., 1.);
     }
+    
+    /* Scrubber */
+    __weak typeof(self) wself = self;
+    [self.KVOController observe:self.scrubber
+                        keyPath:NSStringFromSelector(@selector(value))
+                        options:NSKeyValueObservingOptionNew
+                          block:^(id observer, id object, NSDictionary *change)
+     {
+         [wself syncTimeLabel];
+     }];
+    
+    /*
+     *  iOS 9 Proportional Numbers
+     *  http://useyourloaf.com/blog/ios-9-proportional-numbers.html
+     */
+    NSDictionary * fontAttributes = @{UIFontDescriptorFeatureSettingsAttribute: @[@{UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+                                                                                    UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]};
+    self.timeLabel.font = [UIFont fontWithDescriptor:[[self.timeLabel.font fontDescriptor] fontDescriptorByAddingAttributes:fontAttributes]
+                                                size:self.timeLabel.font.pointSize];
 }
 
 - (void)didReceiveMemoryWarning
@@ -105,11 +160,16 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     // Dispose of any resources that can be recreated.
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    [self createPlayer];
+    [self createPlayerItem];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -123,6 +183,15 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 {
     if (!parent) {
         self.playerStatus = PlayerStatusNone;
+    }
+}
+
+#pragma mark - Application
+
+- (void)applicationWillResignActiveNotification:(NSNotification *)note
+{
+    if (self.playerStatus == PlayerStatusPlay) {
+        self.playerStatus = PlayerStatusPause;
     }
 }
 
@@ -141,6 +210,11 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
             [self.activityIndicatorView stopAnimating];
         }
     }];
+}
+
+- (BOOL)isActivityIndicatorViewShown
+{
+    return self.activityIndicatorContainer.alpha == 1.;
 }
 
 #pragma mark - Controls View
@@ -185,6 +259,7 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
         case PlayerStatusPlay:
             self.playerStatus = PlayerStatusPause;
             break;
+        case PlayerStatusBufferLoading:
         case PlayerStatusPause:
             self.playerStatus = PlayerStatusPlay;
             break;
@@ -204,6 +279,8 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     switch (self.playerStatus) {
         case PlayerStatusPlay:
             [self.controlButton setImage:[YSVideoPlayerStyleKit imageOfPause] forState:UIControlStateNormal];
+            break;
+        case PlayerStatusBufferLoading:
             break;
         case PlayerStatusEnd:
             [self.controlButton setImage:[YSVideoPlayerStyleKit imageOfReplay] forState:UIControlStateNormal];
@@ -235,7 +312,6 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 
 - (IBAction)beginScrubbing:(UISlider *)sender
 {
-    [self activityIndicatorViewShown:YES];
     [self cancelHideContolsViewAfterDelay];
     [self removePlayerTimeObserver];
     
@@ -258,7 +334,9 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
         
         Float64 time = duration * (value - minValue) / (maxValue - minValue);
         if (time < self.totalTime) {
-            if (self.playerStatus == PlayerStatusEnd) {
+            if (self.playerStatus == PlayerStatusBufferLoading ||
+                self.playerStatus == PlayerStatusEnd)
+            {
                 self.playerStatus = PlayerStatusPlay;
             }
         } else {
@@ -267,13 +345,17 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
         
         [self updateTimeLabelWithTime:time];
         
-            __weak typeof(self) wself = self;
+        if (time != self.totalTime) {
+            self.playerStatus = PlayerStatusBufferLoading;
+        }
         
+        __weak typeof(self) wself = self;
         [self.player seekToTime:CMTimeMakeWithSeconds(time, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
-            if (finished || time == wself.totalTime) {
+            if (([wself isCachedVideo] && finished)
+                ||
+                time == wself.totalTime)
+            {
                 [wself activityIndicatorViewShown:NO];
-            } else {
-                [wself activityIndicatorViewShown:YES];
             }
             
             if (time == wself.totalTime && wself.playerStatus != PlayerStatusEnd) {
@@ -285,7 +367,7 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 
 - (IBAction)endScrubbing:(UISlider *)sender
 {
-    [self AddPlayerTimeObserver];
+    [self addPlayerTimeObserver];
     
     if (self.restoreAfterScrubbingRate) {
         self.player.rate = self.restoreAfterScrubbingRate;
@@ -338,94 +420,206 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     return _playerView;
 }
 
-#pragma mark - Player
+#pragma mark - Player Item
 
-- (void)createPlayer
+- (NSURL *)videoURL
+{
+    NSURL *URL = [NSURL URLWithString:self.URLString];
+    
+    if ([self.URLString.pathExtension isEqualToString:kExtensionMP4]) {
+        NSURLComponents *components = [[NSURLComponents alloc] initWithURL:URL resolvingAgainstBaseURL:NO];
+        components.scheme = [components.scheme stringByAppendingString:kDownloadSchemeSuffix];
+        return components.URL;
+    }
+    return URL;
+}
+
+- (void)createPlayerItem
 {
     [self activityIndicatorViewShown:YES];
     [self hideContolsView];
     
-    self.player = nil;
     self.playerStatus = PlayerStatusWait;
     
+    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:[self videoURL] options:nil];
+    [asset.resourceLoader setDelegate:self queue:dispatch_get_main_queue()];
+    
+    NSArray *requestedKeys = @[@"playable"];
+    
+    /* Tells the asset to load the values of any of the specified keys that are not already loaded. */
     __weak typeof(self) wself = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        AVPlayer *player = [[AVPlayer alloc] initWithURL:[NSURL URLWithString:wself.URLString]]; // High cost
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
+    [asset loadValuesAsynchronouslyForKeys:requestedKeys completionHandler:^{
+        dispatch_async( dispatch_get_main_queue(), ^{
             if (!wself || wself.playerStatus == PlayerStatusNone) return ;
             
-            wself.player = player;
-            [wself.playerView setPlayer:wself.player];
-            
-            [wself.KVOController observe:wself.player.currentItem
-                                 keyPath:NSStringFromSelector(@selector(status))
-                                 options:NSKeyValueObservingOptionNew
-                                   block:^(id observer, id object, NSDictionary *change)
-             {
-                 AVPlayerItemStatus status = [change[NSKeyValueChangeNewKey] integerValue];
-                 
-                 switch (status) {
-                     default:
-                     case AVPlayerItemStatusUnknown:
-                         wself.playerStatus = PlayerStatusNone;
-                         break;
-                     case AVPlayerItemStatusReadyToPlay:
-                         [wself activityIndicatorViewShown:NO];
-                         
-                         if (!wself.scrubber.tracking && wself.playerStatus != PlayerStatusPause) {
-                             [wself hideContolsViewAfterDelay];
-                             [wself AddPlayerTimeObserver];
-                             wself.playerStatus = PlayerStatusPlay;
-                         }
-                         break;
-                     case AVPlayerItemStatusFailed:
-                     {
-                         AVPlayerItem *item = (AVPlayerItem *)object;
-                         if ([item isKindOfClass:[AVPlayerItem class]]) {
-                             [RMUniversalAlert showAlertInViewController:wself
-                                                               withTitle:item.error.localizedDescription
-                                                                 message:item.error.localizedFailureReason
-                                                       cancelButtonTitle:@"OK"
-                                                  destructiveButtonTitle:nil
-                                                       otherButtonTitles:nil
-                                                                tapBlock:nil];
-                         }
-                         wself.playerStatus = PlayerStatusError;
-                         break;
-                     }
-                 }
-             }];
-            [wself.KVOController observe:wself.player
-                                 keyPath:NSStringFromSelector(@selector(rate))
-                                 options:NSKeyValueObservingOptionNew
-                                   block:^(id observer, id object, NSDictionary *change)
-             {
-                 [wself syncControlButton];
-             }];
-            [[NSNotificationCenter defaultCenter] addObserver:wself
-                                                     selector:@selector(playerDidPlayToEndTime:)
-                                                         name:AVPlayerItemDidPlayToEndTimeNotification
-                                                       object:wself.player.currentItem];
-            
-            wself.totalTime = CMTimeGetSeconds([wself.player currentItem].asset.duration);
-            wself.totalTimeString = [wself timeStringFromTimeInterval:wself.totalTime];
-            
-            [wself.KVOController observe:wself.scrubber
-                                 keyPath:NSStringFromSelector(@selector(value))
-                                 options:NSKeyValueObservingOptionNew
-                                   block:^(id observer, id object, NSDictionary *change)
-             {
-                 [wself syncTimeLabel];
-             }];
+            /* IMPORTANT: Must dispatch to main queue in order to operate on the AVPlayer and AVPlayerItem. */
+            [wself prepareToPlayAsset:asset withKeys:requestedKeys];
         });
-    });
+    }];
 }
+
+- (void)prepareToPlayAsset:(AVURLAsset *)asset withKeys:(NSArray *)requestedKeys
+{
+    for (NSString *thisKey in requestedKeys) {
+        NSError *error = nil;
+        AVKeyValueStatus keyStatus = [asset statusOfValueForKey:thisKey error:&error];
+        if (keyStatus == AVKeyValueStatusFailed) {
+            [self assetFailedToPrepareForPlayback:error];
+            return;
+        }
+        /* If you are also implementing -[AVAsset cancelLoading], add your code here to bail out properly in the case of cancellation. */
+    }
+    
+    /* Use the AVAsset playable property to detect whether the asset can be played. */
+    if (!asset.playable) {
+        /* Generate an error describing the failure. */
+        NSString *localizedDescription = NSLocalizedString(@"Item cannot be played", @"Item cannot be played description");
+        NSString *localizedFailureReason = NSLocalizedString(@"The assets tracks were loaded, but could not be made playable.", @"Item cannot be played failure reason");
+        
+        NSError *assetCannotBePlayedError = [NSError errorWithDomain:@"com.yusuga.YSVideoPlayer"
+                                                                code:0
+                                                            userInfo:@{NSLocalizedDescriptionKey : localizedDescription,
+                                                                       NSLocalizedFailureReasonErrorKey : localizedFailureReason}];
+        
+        /* Display the error to the user. */
+        [self assetFailedToPrepareForPlayback:assetCannotBePlayedError];
+        return;
+    }
+    
+    __weak typeof(self) wself = self;
+    
+    /* PlayerItem */
+    
+    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
+    
+    self.totalTime = CMTimeGetSeconds(asset.duration);
+    self.totalTimeString = [self timeStringFromTimeInterval:self.totalTime];
+    
+    [self.KVOController observe:playerItem
+                        keyPath:NSStringFromSelector(@selector(status))
+                        options:NSKeyValueObservingOptionNew
+                          block:^(id observer, id object, NSDictionary *change)
+     {
+         AVPlayerItemStatus status = [change[NSKeyValueChangeNewKey] integerValue];
+         
+         switch (status) {
+             default:
+             case AVPlayerItemStatusUnknown:
+                 wself.playerStatus = PlayerStatusNone;
+                 break;
+             case AVPlayerItemStatusReadyToPlay:
+                 if (!wself.scrubber.tracking && wself.playerStatus != PlayerStatusPause) {
+                     [wself hideContolsViewAfterDelay];
+                     [wself addPlayerTimeObserver];
+                     wself.playerStatus = PlayerStatusPlay;
+                 }
+                 break;
+             case AVPlayerItemStatusFailed:
+             {
+                 AVPlayerItem *item = (AVPlayerItem *)object;
+                 NSError *error = nil;
+                 if ([item isKindOfClass:[AVPlayerItem class]]) {
+                     error = item.error;
+                 }
+                 [wself assetFailedToPrepareForPlayback:error];
+                 break;
+             }
+         }
+     }];
+    
+    [self.KVOController observe:playerItem
+                        keyPath:NSStringFromSelector(@selector(isPlaybackLikelyToKeepUp))
+                        options:NSKeyValueObservingOptionNew
+                          block:^(id observer, id object, NSDictionary *change)
+     {
+#warning debug
+         NSLog(@">>> isPlaybackLikelyToKeepUp");
+         if (wself.playerStatus == PlayerStatusBufferLoading) {
+             wself.playerStatus = PlayerStatusPlay;
+         }
+     }];
+    [self.KVOController observe:playerItem
+                        keyPath:NSStringFromSelector(@selector(isPlaybackBufferEmpty))
+                        options:NSKeyValueObservingOptionNew
+                          block:^(id observer, id object, NSDictionary *change)
+     {
+#warning debug
+         NSLog(@">>> isPlaybackBufferEmpty");
+         wself.playerStatus = PlayerStatusBufferLoading;
+     }];
+    [self.KVOController observe:playerItem
+                        keyPath:NSStringFromSelector(@selector(isPlaybackBufferFull))
+                        options:NSKeyValueObservingOptionNew
+                          block:^(id observer, id object, NSDictionary *change)
+     {
+#warning debug
+         NSLog(@">>> isPlaybackBufferFull");
+         if (wself.playerStatus == PlayerStatusBufferLoading) {
+             wself.playerStatus = PlayerStatusPlay;
+         }
+     }];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(playerDidPlayToEndTime:)
+                                                 name:AVPlayerItemDidPlayToEndTimeNotification
+                                               object:playerItem];
+    
+    /* Player */
+    
+    if (!self.player) {
+        self.player = [[AVPlayer alloc] initWithPlayerItem:playerItem];
+        
+        [self.KVOController observe:self.player
+                            keyPath:NSStringFromSelector(@selector(rate))
+                            options:NSKeyValueObservingOptionNew
+                              block:^(id observer, id object, NSDictionary *change)
+         {
+             [wself syncControlButton];
+         }];
+    }
+    
+    [self.playerView setPlayer:self.player];
+}
+
+-(void)assetFailedToPrepareForPlayback:(NSError *)error
+{
+    NSError *displayedError = self.downloadError ?: error;
+    if (displayedError) {
+        [RMUniversalAlert showAlertInViewController:self
+                                          withTitle:displayedError.localizedDescription
+                                            message:displayedError.localizedFailureReason
+                                  cancelButtonTitle:@"OK"
+                             destructiveButtonTitle:nil
+                                  otherButtonTitles:nil
+                                           tapBlock:nil];
+    }
+    
+    self.playerStatus = PlayerStatusError;
+}
+
+- (Float64)currentTime
+{
+    return CMTimeGetSeconds([self.player currentItem].currentTime);
+}
+
+- (CMTime)playerItemDuration
+{
+    AVPlayerItem *playerItem = [self.player currentItem];
+    if (playerItem.status == AVPlayerItemStatusReadyToPlay) {
+        return([playerItem duration]);
+    }
+    return(kCMTimeInvalid);
+}
+
+#pragma mark - Player
 
 - (void)setPlayerStatus:(PlayerStatus)playerStatus
 {
     _playerStatus = playerStatus;
     [self cancelHideContolsViewAfterDelay];
+    
+#warning debug
+    NSLog(@"status: %@", NSStringFromPlayerStatus(playerStatus));
     
     switch (playerStatus) {
         case PlayerStatusNone:
@@ -441,19 +635,23 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
             self.errorButton.hidden = YES;
             self.playerView.hidden = YES;
             [self contolsViewShown:NO animated:NO];
-
+            
             break;
         case PlayerStatusPlay:
         {
-            [self activityIndicatorViewShown:NO];
             self.errorButton.hidden = YES;
             self.playerView.hidden = NO;
-
+            
             [self.player play];
             
             [self hideContolsViewAfterDelay];
             break;
         }
+        case PlayerStatusBufferLoading:
+            [self activityIndicatorViewShown:YES];
+            self.errorButton.hidden = YES;
+            self.playerView.hidden = NO;
+            break;
         case PlayerStatusPause:
             self.errorButton.hidden = YES;
             
@@ -486,8 +684,16 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 {
     [self.KVOController unobserveAll];
     [self removePlayerTimeObserver];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:AVPlayerItemDidPlayToEndTimeNotification
+                                                  object:self.player.currentItem];
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
+    
+    [self.downloadTask cancel];
+    self.downloadTask = nil;
+    self.downloadError = nil;
+    
+    [self.playerView setPlayer:nil];
     
     [self.player pause];
     self.player = nil;
@@ -498,21 +704,7 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     return self.restoreAfterScrubbingRate != 0.f || [self.player rate] != 0.f;
 }
 
-- (Float64)currentTime
-{
-    return CMTimeGetSeconds([self.player currentItem].currentTime);
-}
-
-- (CMTime)playerItemDuration
-{
-    AVPlayerItem *playerItem = [self.player currentItem];
-    if (playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        return([playerItem duration]);
-    }
-    return(kCMTimeInvalid);
-}
-
--(void)AddPlayerTimeObserver
+-(void)addPlayerTimeObserver
 {
     [self removePlayerTimeObserver];
     
@@ -521,6 +713,10 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
                                                                   queue:dispatch_get_main_queue()
                                                              usingBlock:^(CMTime time)
                          {
+                             if (wself.playerStatus == PlayerStatusPlay && [wself isActivityIndicatorViewShown]) {
+                                 [wself activityIndicatorViewShown:NO];
+                             }
+                             
                              [wself syncScrubber];
                          }];
 }
@@ -537,10 +733,10 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
 
 - (IBAction)errorButtonClicked:(id)sender
 {
-    [self createPlayer];
+    [self createPlayerItem];
 }
 
-#pragma mark - Notification
+#pragma mark - AVPlayerItem Notification
 
 - (void)playerDidPlayToEndTime:(NSNotification *)note
 {
@@ -551,6 +747,118 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     }
     
     self.playerStatus = PlayerStatusEnd;
+}
+
+#pragma mark - AVAssetResourceLoaderDelegate
+
+- (BOOL)resourceLoader:(AVAssetResourceLoader *)resourceLoader shouldWaitForLoadingOfRequestedResource:(AVAssetResourceLoadingRequest *)loadingRequest
+{
+    NSURL *URL = loadingRequest.request.URL;
+    if (![URL.scheme hasSuffix:kDownloadSchemeSuffix]) return NO;
+    
+    if ([self isCachedVideo]) {
+        [self downloadCompletionWithLoadingRequest:loadingRequest];
+        return YES;
+    }
+    
+    NSURLComponents *components = [[NSURLComponents alloc] initWithURL:loadingRequest.request.URL resolvingAgainstBaseURL:NO];
+    components.scheme = [components.scheme stringByReplacingOccurrencesOfString:kDownloadSchemeSuffix withString:@""];
+    [self downloadWithLoadingRequest:loadingRequest URL:components.URL];
+    return YES;
+}
+
+#pragma mark - Download
+
+- (void)downloadWithLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest URL:(NSURL *)URL
+{
+    NSLog(@"start download");
+    AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
+    NSProgress *progress;
+    
+    __weak typeof(self) wself = self;
+    NSURLSessionDownloadTask *downloadTask;
+    downloadTask = [session downloadTaskWithRequest:[NSURLRequest requestWithURL:URL]
+                                           progress:&progress
+                                        destination:^NSURL *(NSURL *targetPath, NSURLResponse *response)
+                    {
+                        return [wself cachedVideoFileURL];
+                    } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
+                        // [progress removeObserver:self forKeyPath:@"fractionCompleted" context:NULL];
+                        dispatch_async(dispatch_get_main_queue(), ^(void){
+                            NSLog(@"File downloaded to: %@, path: %@", filePath, filePath.path);
+                            NSLog(@"%@", response);
+                            NSLog(@"expec %lld", response.expectedContentLength);
+                            
+                            if (error) {
+                                if (![error.domain isEqualToString:NSURLErrorDomain] ||
+                                    error.code != NSURLErrorCancelled)
+                                {
+                                    wself.downloadError = error;
+                                }
+                                [loadingRequest finishLoadingWithError:error];
+                                return ;
+                            }
+                            
+                            [wself downloadCompletionWithLoadingRequest:loadingRequest];
+                        });
+                    }];
+    [downloadTask resume];
+    
+    [self.downloadTask cancel];
+    self.downloadTask = downloadTask;
+}
+
+- (void)downloadCompletionWithLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest
+{
+    NSURL *videoURL = [self cachedVideoFileURL];
+    NSData *data = [[NSFileManager defaultManager] contentsAtPath:videoURL.path];
+    NSData *requestedData = [data subdataWithRange:NSMakeRange((NSUInteger)loadingRequest.dataRequest.requestedOffset,
+                                                               (NSUInteger)loadingRequest.dataRequest.requestedLength)];
+    
+    AVAssetResourceLoadingContentInformationRequest *info = loadingRequest.contentInformationRequest;
+    info.contentType = CFBridgingRelease((UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)videoURL.pathExtension, NULL)));
+    info.contentLength = data.length;
+    info.byteRangeAccessSupported = YES;
+    
+    [loadingRequest.dataRequest respondWithData:requestedData];
+    [loadingRequest finishLoading];
+}
+
+#pragma mark - Cache
+
++ (NSURL *)cacheDirecotryFileURL
+{
+    NSURL *dir = [NSURL fileURLWithPath:[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject]];
+    dir = [dir URLByAppendingPathComponent:kCacheDirctory];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:dir.path]) {
+        NSError *error = nil;
+        [fileManager createDirectoryAtPath:dir.path
+               withIntermediateDirectories:NO
+                                attributes:nil
+                                     error:&error];
+        NSLog(@"%s, error = %@", __func__, error);
+    }
+    
+    return dir;
+}
+
+- (NSURL *)cachedVideoFileURL
+{
+    return [[[self class] cacheDirecotryFileURL] URLByAppendingPathComponent:self.URLString.lastPathComponent];
+}
+
+- (BOOL)isCachedVideo
+{
+    return [[NSFileManager defaultManager] fileExistsAtPath:[self cachedVideoFileURL].path];
+}
+
++ (void)deleteDiskCache
+{
+    NSError *error = nil;
+    [[NSFileManager defaultManager] removeItemAtURL:[self cacheDirecotryFileURL] error:&error];
+    if (error) NSLog(@"%s, error = %@", __func__, error);
 }
 
 @end

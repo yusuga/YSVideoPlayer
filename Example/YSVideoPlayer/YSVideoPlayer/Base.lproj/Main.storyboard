@@ -126,9 +126,17 @@
                                     <segment title="BipBop.m3u8"/>
                                     <segment title="30s.m3u8"/>
                                     <segment title="30s.mp4"/>
-                                    <segment title="Heavy.mp4"/>
+                                    <segment title="50MB.mp4"/>
                                 </segments>
                             </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1SY-Ds-Yaf">
+                                <rect key="frame" x="239" y="518" width="122" height="30"/>
+                                <animations/>
+                                <state key="normal" title="Delete disk cache"/>
+                                <connections>
+                                    <action selector="deleteDiskCache" destination="d2v-aB-emh" eventType="touchUpInside" id="rQX-29-slW"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -140,6 +148,7 @@
                             <constraint firstItem="5qb-Ms-X2i" firstAttribute="centerX" secondItem="1DM-mV-gES" secondAttribute="centerX" id="Dg8-17-eLB"/>
                             <constraint firstItem="sr7-Ca-bOq" firstAttribute="height" secondItem="1DM-mV-gES" secondAttribute="width" multiplier="9:16" id="EFn-7T-lfX"/>
                             <constraint firstItem="sr7-Ca-bOq" firstAttribute="centerX" secondItem="1DM-mV-gES" secondAttribute="centerX" id="Eb4-jz-4Pr"/>
+                            <constraint firstItem="z80-YP-A0S" firstAttribute="top" secondItem="1SY-Ds-Yaf" secondAttribute="bottom" constant="8" id="HlC-KO-152"/>
                             <constraint firstItem="5qb-Ms-X2i" firstAttribute="leading" secondItem="1DM-mV-gES" secondAttribute="leading" constant="8" id="I2d-X3-5Lf"/>
                             <constraint firstItem="sr7-Ca-bOq" firstAttribute="leading" secondItem="1DM-mV-gES" secondAttribute="leading" id="Sh7-YN-uv1"/>
                             <constraint firstItem="z80-YP-A0S" firstAttribute="top" secondItem="sr7-Ca-bOq" secondAttribute="bottom" constant="8" id="av5-7k-NjX"/>
@@ -148,6 +157,7 @@
                             <constraint firstItem="sr7-Ca-bOq" firstAttribute="centerY" secondItem="1DM-mV-gES" secondAttribute="centerY" id="gUJ-Os-CHt"/>
                             <constraint firstItem="sr7-Ca-bOq" firstAttribute="leading" secondItem="1DM-mV-gES" secondAttribute="leading" id="twd-pw-ZMp"/>
                             <constraint firstItem="5qb-Ms-X2i" firstAttribute="top" secondItem="VEu-gC-Fev" secondAttribute="bottom" constant="8" id="yHA-AM-igQ"/>
+                            <constraint firstItem="1SY-Ds-Yaf" firstAttribute="centerX" secondItem="1DM-mV-gES" secondAttribute="centerX" id="zUV-OI-g9s"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
@@ -230,11 +240,11 @@
             </objects>
             <point key="canvasLocation" x="515" y="677"/>
         </scene>
-        <!--Inline-->
+        <!--Embed-->
         <scene sceneID="bkt-HM-QHv">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="4fc-Jf-qmr" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Inline" id="F02-C6-2aL"/>
+                    <tabBarItem key="tabBarItem" title="Embed" id="F02-C6-2aL"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="912-r5-vtN">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>

@@ -1,4 +1,25 @@
 PODS:
+  - AFNetworking (2.6.3):
+    - AFNetworking/NSURLConnection (= 2.6.3)
+    - AFNetworking/NSURLSession (= 2.6.3)
+    - AFNetworking/Reachability (= 2.6.3)
+    - AFNetworking/Security (= 2.6.3)
+    - AFNetworking/Serialization (= 2.6.3)
+    - AFNetworking/UIKit (= 2.6.3)
+  - AFNetworking/NSURLConnection (2.6.3):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/NSURLSession (2.6.3):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (2.6.3)
+  - AFNetworking/Security (2.6.3)
+  - AFNetworking/Serialization (2.6.3)
+  - AFNetworking/UIKit (2.6.3):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
   - KVOController (1.0.3)
   - RMUniversalAlert (0.7):
     - RMUniversalAlert/Core (= 0.7)
@@ -11,10 +32,12 @@ PODS:
   - UIAlertView+Blocks (0.9)
 
 DEPENDENCIES:
+  - AFNetworking
   - KVOController
   - RMUniversalAlert
 
 SPEC CHECKSUMS:
+  AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
   KVOController: 9fd8f0343670994e4b6f9f0b31f5a45663f3e1cf
   RMUniversalAlert: bce2ca406c24065b76665725c83e48006e8f65f8
   UIActionSheet+Blocks: e180b7dad0a721ab7f212ac9742af799008bb358

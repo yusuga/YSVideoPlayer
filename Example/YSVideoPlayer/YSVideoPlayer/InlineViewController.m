@@ -49,7 +49,8 @@
             URLStr = @"https://video.twimg.com/ext_tw_video/560070131976392705/pu/vid/1280x720/c4E56sl91ZB7cpYi.mp4";
             break;
         case 3:
-            URLStr = @"https://16-lvl3-pdl.vimeocdn.com/01/2540/3/87701971/230891258.mp4";
+            /* http://www.sample-videos.com */
+            URLStr = @"http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_50mb.mp4";
             break;
         default:
             abort();
@@ -57,7 +58,7 @@
     }
     
     YSEmbedVideoPlayer *player = [YSEmbedVideoPlayer playerWithURLString:URLStr
-                                                                    repeat:self.repeatSwitch.on];
+                                                                  repeat:self.repeatSwitch.on];
     
     player.view.frame = self.inlineView.bounds;
     [self.inlineView addSubview:player.view];
@@ -76,6 +77,12 @@
     [self.player removeFromParentViewController];
     
     self.player = nil;
+}
+
+- (IBAction)deleteDiskCache
+{
+    NSLog(@"%s", __func__);
+    [YSEmbedVideoPlayer deleteDiskCache];
 }
 
 @end

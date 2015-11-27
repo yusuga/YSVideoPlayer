@@ -17,4 +17,6 @@
 
 @property (weak, nonatomic, readonly) IBOutlet YSEmbedVideoPlayerView *playerView;
 
++ (void)deleteDiskCache;
+
 @end
