@@ -11,12 +11,14 @@
 @import CoreText;
 #import <AFNetworking/AFNetworking.h>
 #import <RMUniversalAlert/RMUniversalAlert.h>
+#import <M13ProgressSuite/M13ProgressViewRing.h>
 #import <KVOController/FBKVOController.h>
 #import "YSVideoPlayerStyleKit.h"
 
 typedef NS_ENUM(NSInteger, PlayerStatus) {
     PlayerStatusNone,
     PlayerStatusWait,
+    PlayerStatusDowloading,
     PlayerStatusPlay,
     PlayerStatusBufferLoading,
     PlayerStatusPause,
@@ -30,6 +32,8 @@ static NSString *NSStringFromPlayerStatus(PlayerStatus status)
             return @"PlayerStatusNone";
         case PlayerStatusWait:
             return @"PlayerStatusWait";
+        case PlayerStatusDowloading:
+            return @"PlayerStatusDowloading";
         case PlayerStatusPlay:
             return @"PlayerStatusPlay";
         case PlayerStatusBufferLoading:
@@ -75,6 +79,8 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 @property (nonatomic) id timeObserver;
 
 @property (nonatomic) NSURLSessionDownloadTask *downloadTask;
+@property (weak, nonatomic) IBOutlet UIView *downloadProgressContainer;
+@property (weak, nonatomic) IBOutlet M13ProgressViewRing *downloadProgressView;
 @property (nonatomic) NSError *downloadError;
 
 @end
@@ -152,6 +158,10 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
                                                                                     UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]};
     self.timeLabel.font = [UIFont fontWithDescriptor:[[self.timeLabel.font fontDescriptor] fontDescriptorByAddingAttributes:fontAttributes]
                                                 size:self.timeLabel.font.pointSize];
+    
+    self.downloadProgressView.showPercentage = NO;
+    self.downloadProgressView.primaryColor = [UIColor whiteColor];
+    self.downloadProgressView.secondaryColor = [UIColor darkGrayColor];
 }
 
 - (void)didReceiveMemoryWarning
@@ -618,12 +628,11 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     _playerStatus = playerStatus;
     [self cancelHideContolsViewAfterDelay];
     
-#warning debug
-    NSLog(@"status: %@", NSStringFromPlayerStatus(playerStatus));
-    
     switch (playerStatus) {
         case PlayerStatusNone:
             [self activityIndicatorViewShown:NO];
+            [self.downloadProgressView setProgress:0. animated:NO];
+            self.downloadProgressContainer.hidden = YES;
             self.errorButton.hidden = YES;
             self.playerView.hidden = YES;
             [self contolsViewShown:NO animated:NO];
@@ -632,23 +641,34 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
             return;
         case PlayerStatusWait:
             [self activityIndicatorViewShown:YES];
+            [self.downloadProgressView setProgress:0. animated:NO];
+            self.downloadProgressContainer.hidden = YES;
             self.errorButton.hidden = YES;
             self.playerView.hidden = YES;
             [self contolsViewShown:NO animated:NO];
-            
+            break;
+        case PlayerStatusDowloading:
+            [self activityIndicatorViewShown:NO];
+            self.downloadProgressContainer.hidden = NO;
+            self.errorButton.hidden = YES;
+            self.playerView.hidden = YES;
+            [self contolsViewShown:NO animated:NO];
             break;
         case PlayerStatusPlay:
         {
+            [self.downloadProgressView setProgress:0. animated:NO];
+            self.downloadProgressContainer.hidden = YES;
             self.errorButton.hidden = YES;
             self.playerView.hidden = NO;
+            [self hideContolsViewAfterDelay];
             
             [self.player play];
-            
-            [self hideContolsViewAfterDelay];
             break;
         }
         case PlayerStatusBufferLoading:
             [self activityIndicatorViewShown:YES];
+            [self.downloadProgressView setProgress:0. animated:NO];
+            self.downloadProgressContainer.hidden = YES;
             self.errorButton.hidden = YES;
             self.playerView.hidden = NO;
             break;
@@ -660,12 +680,16 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
         case PlayerStatusEnd:
         {
             [self activityIndicatorViewShown:NO];
+            [self.downloadProgressView setProgress:0. animated:NO];
+            self.downloadProgressContainer.hidden = YES;
             self.errorButton.hidden = YES;
             [self contolsViewShown:YES animated:YES];
             break;
         }
         case PlayerStatusError:
             [self activityIndicatorViewShown:NO];
+            [self.downloadProgressView setProgress:0. animated:NO];
+            self.downloadProgressContainer.hidden = YES;
             self.errorButton.hidden = NO;
             self.playerView.hidden = YES;
             [self contolsViewShown:NO animated:NO];
@@ -771,7 +795,6 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 
 - (void)downloadWithLoadingRequest:(AVAssetResourceLoadingRequest *)loadingRequest URL:(NSURL *)URL
 {
-    NSLog(@"start download");
     AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
     NSProgress *progress;
     
@@ -789,6 +812,9 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
                             NSLog(@"%@", response);
                             NSLog(@"expec %lld", response.expectedContentLength);
                             
+                            [wself.KVOController unobserve:progress
+                                                   keyPath:NSStringFromSelector(@selector(fractionCompleted))];
+                            
                             if (error) {
                                 if (![error.domain isEqualToString:NSURLErrorDomain] ||
                                     error.code != NSURLErrorCancelled)
@@ -802,9 +828,23 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
                             [wself downloadCompletionWithLoadingRequest:loadingRequest];
                         });
                     }];
-    [downloadTask resume];
+    
+    self.playerStatus = PlayerStatusDowloading;
+    
+    [self.KVOController observe:progress
+                        keyPath:NSStringFromSelector(@selector(fractionCompleted))
+                        options:NSKeyValueObservingOptionNew
+                          block:^(id observer, id object, NSDictionary *change)
+     {
+         CGFloat progress = ((CGFloat)downloadTask.countOfBytesReceived)/((CGFloat)downloadTask.countOfBytesExpectedToReceive);
+         dispatch_async(dispatch_get_main_queue(), ^{
+             [wself.downloadProgressView setProgress:progress
+                                            animated:NO];
+         });
+     }];
     
     [self.downloadTask cancel];
+    [downloadTask resume];
     self.downloadTask = downloadTask;
 }
 

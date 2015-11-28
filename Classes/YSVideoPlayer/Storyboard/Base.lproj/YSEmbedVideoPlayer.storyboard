@@ -123,8 +123,44 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </view>
+                            <view hidden="YES" clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Ae-Fy-LXP">
+                                <rect key="frame" x="278" y="278" width="44" height="44"/>
+                                <subviews>
+                                    <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" barStyle="black" translatesAutoresizingMaskIntoConstraints="NO" id="jhl-sI-C8c">
+                                        <rect key="frame" x="0.0" y="0.0" width="44" height="44"/>
+                                        <animations/>
+                                        <items/>
+                                    </toolbar>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ugc-mG-XC9" customClass="M13ProgressViewRing">
+                                        <rect key="frame" x="7" y="7" width="30" height="30"/>
+                                        <animations/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="bSJ-6x-cbp"/>
+                                            <constraint firstAttribute="width" constant="30" id="rim-es-e4k"/>
+                                        </constraints>
+                                    </view>
+                                </subviews>
+                                <animations/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="jhl-sI-C8c" secondAttribute="trailing" id="51F-iA-K7e"/>
+                                    <constraint firstItem="jhl-sI-C8c" firstAttribute="leading" secondItem="8Ae-Fy-LXP" secondAttribute="leading" id="C66-bx-vLr"/>
+                                    <constraint firstAttribute="width" constant="44" id="KJz-Gg-ufV"/>
+                                    <constraint firstItem="jhl-sI-C8c" firstAttribute="top" secondItem="8Ae-Fy-LXP" secondAttribute="top" id="Rgg-cv-Dg5"/>
+                                    <constraint firstItem="ugc-mG-XC9" firstAttribute="centerY" secondItem="8Ae-Fy-LXP" secondAttribute="centerY" id="cvj-kC-g3y"/>
+                                    <constraint firstAttribute="bottom" secondItem="jhl-sI-C8c" secondAttribute="bottom" id="iIz-dZ-OZF"/>
+                                    <constraint firstItem="ugc-mG-XC9" firstAttribute="centerX" secondItem="8Ae-Fy-LXP" secondAttribute="centerX" id="mSK-rB-VU9"/>
+                                    <constraint firstAttribute="height" constant="44" id="oiE-LD-itY"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="10"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
                             <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Eh-Pq-l8i">
-                                <rect key="frame" x="275.5" y="285" width="49" height="30"/>
+                                <rect key="frame" x="275" y="285" width="49" height="30"/>
                                 <animations/>
                                 <color key="backgroundColor" red="1" green="0.11372549019607843" blue="0.13725490196078433" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -139,9 +175,11 @@
                         <animations/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="8Ae-Fy-LXP" firstAttribute="centerY" secondItem="DnU-H2-Gfg" secondAttribute="centerY" id="23M-MW-Q6k"/>
                             <constraint firstItem="10f-hQ-Jj1" firstAttribute="centerX" secondItem="DnU-H2-Gfg" secondAttribute="centerX" id="AQ9-XN-otN"/>
                             <constraint firstAttribute="trailing" secondItem="MWl-fB-5J1" secondAttribute="trailing" id="BQe-4d-qAR"/>
                             <constraint firstItem="MWl-fB-5J1" firstAttribute="top" secondItem="DnU-H2-Gfg" secondAttribute="top" id="OCd-a4-aA8"/>
+                            <constraint firstItem="8Ae-Fy-LXP" firstAttribute="centerX" secondItem="DnU-H2-Gfg" secondAttribute="centerX" id="SYW-Cy-UfY"/>
                             <constraint firstItem="2Eh-Pq-l8i" firstAttribute="centerY" secondItem="DnU-H2-Gfg" secondAttribute="centerY" id="SfO-3X-BRu"/>
                             <constraint firstItem="2Eh-Pq-l8i" firstAttribute="centerX" secondItem="DnU-H2-Gfg" secondAttribute="centerX" id="YsT-Uh-duN"/>
                             <constraint firstItem="52O-nh-iJf" firstAttribute="top" secondItem="MWl-fB-5J1" secondAttribute="bottom" id="mZU-5h-Wal"/>
@@ -154,6 +192,8 @@
                         <outlet property="activityIndicatorView" destination="Rbg-a9-3cY" id="AfM-HZ-H0w"/>
                         <outlet property="controlButton" destination="83M-FS-o5c" id="DrJ-bR-MAU"/>
                         <outlet property="controlsView" destination="a3w-y2-gCs" id="glp-d7-ILn"/>
+                        <outlet property="downloadProgressContainer" destination="8Ae-Fy-LXP" id="Url-0T-2Ft"/>
+                        <outlet property="downloadProgressView" destination="ugc-mG-XC9" id="iF6-Io-hrr"/>
                         <outlet property="errorButton" destination="2Eh-Pq-l8i" id="eIg-kZ-IO3"/>
                         <outlet property="playerView" destination="MWl-fB-5J1" id="mSX-mI-oNq"/>
                         <outlet property="scrubber" destination="Xvz-nG-2DB" id="YSk-XJ-z0K"/>
