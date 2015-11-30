@@ -538,32 +538,19 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
      }];
     
     [self.KVOController observe:playerItem
-                        keyPath:NSStringFromSelector(@selector(isPlaybackLikelyToKeepUp))
+                        keyPath:@"playbackBufferEmpty"
                         options:NSKeyValueObservingOptionNew
                           block:^(id observer, id object, NSDictionary *change)
      {
-#warning debug
-         NSLog(@">>> isPlaybackLikelyToKeepUp");
-         if (wself.playerStatus == PlayerStatusBufferLoading) {
-             wself.playerStatus = PlayerStatusPlay;
+         if (wself.playerStatus == PlayerStatusPlay) {
+             wself.playerStatus = PlayerStatusBufferLoading;
          }
      }];
     [self.KVOController observe:playerItem
-                        keyPath:NSStringFromSelector(@selector(isPlaybackBufferEmpty))
+                        keyPath:@"playbackLikelyToKeepUp"
                         options:NSKeyValueObservingOptionNew
                           block:^(id observer, id object, NSDictionary *change)
      {
-#warning debug
-         NSLog(@">>> isPlaybackBufferEmpty");
-         wself.playerStatus = PlayerStatusBufferLoading;
-     }];
-    [self.KVOController observe:playerItem
-                        keyPath:NSStringFromSelector(@selector(isPlaybackBufferFull))
-                        options:NSKeyValueObservingOptionNew
-                          block:^(id observer, id object, NSDictionary *change)
-     {
-#warning debug
-         NSLog(@">>> isPlaybackBufferFull");
          if (wself.playerStatus == PlayerStatusBufferLoading) {
              wself.playerStatus = PlayerStatusPlay;
          }
