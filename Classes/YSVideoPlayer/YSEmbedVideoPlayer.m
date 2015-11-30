@@ -793,11 +793,8 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
                     {
                         return [wself cachedVideoFileURL];
                     } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
-                        // [progress removeObserver:self forKeyPath:@"fractionCompleted" context:NULL];
+                        
                         dispatch_async(dispatch_get_main_queue(), ^(void){
-                            NSLog(@"File downloaded to: %@, path: %@", filePath, filePath.path);
-                            NSLog(@"%@", response);
-                            NSLog(@"expec %lld", response.expectedContentLength);
                             
                             [wself.KVOController unobserve:progress
                                                    keyPath:NSStringFromSelector(@selector(fractionCompleted))];
@@ -886,6 +883,57 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     NSError *error = nil;
     [[NSFileManager defaultManager] removeItemAtURL:[self cacheDirecotryFileURL] error:&error];
     if (error) NSLog(@"%s, error = %@", __func__, error);
+}
+
++ (void)cleanDiskCache
+{
+    [self cleanDiskCacheWithMaxCacheAge:60*60*24];
+}
+
++ (void)cleanDiskCacheWithMaxCacheAge:(NSInteger)maxCacheAge
+{
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    NSURL *cacheDirURL = [self cacheDirecotryFileURL];
+    NSArray *resourceKeys = @[NSURLIsDirectoryKey, NSURLContentModificationDateKey];
+    
+    NSError *error = nil;
+    NSArray<NSURL *> *contents = [fileManager contentsOfDirectoryAtURL:cacheDirURL
+                                            includingPropertiesForKeys:resourceKeys
+                                                               options:NSDirectoryEnumerationSkipsHiddenFiles
+                                                                 error:&error];
+    if (error) {
+        NSLog(@"%s(%d), error = %@", __func__, __LINE__, error);
+        return;
+    }
+    
+    contents = [contents filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"!(%K IN %@)", NSStringFromSelector(@selector(pathExtension)), [self ignoreDiskCacheExtensions]]];
+    
+    NSDate *expirationDate = [NSDate dateWithTimeIntervalSinceNow:-maxCacheAge];
+    
+    NSMutableArray *urlsToDelete = [[NSMutableArray alloc] init];
+    for (NSURL *fileURL in contents) {
+        NSDictionary *resourceValues = [fileURL resourceValuesForKeys:resourceKeys error:NULL];
+        
+        if ([resourceValues[NSURLIsDirectoryKey] boolValue]) return;
+        
+        NSDate *modificationDate = resourceValues[NSURLContentModificationDateKey];
+        if ([[modificationDate laterDate:expirationDate] isEqualToDate:expirationDate]) {
+            [urlsToDelete addObject:fileURL];
+            continue;
+        }
+    }
+    
+    for (NSURL *fileURL in urlsToDelete) {
+        NSError *error = nil;
+        [fileManager removeItemAtURL:fileURL error:&error];
+        if (error) NSLog(@"%s(%d), error = %@", __func__, __LINE__, error);
+    }
+}
+
++ (NSArray *)ignoreDiskCacheExtensions
+{
+    return @[@"db", @"db-shm", @"db-wal"];
 }
 
 @end

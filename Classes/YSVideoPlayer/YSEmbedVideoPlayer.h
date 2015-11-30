@@ -19,4 +19,7 @@
 
 + (void)deleteDiskCache;
 
++ (void)cleanDiskCache;
++ (void)cleanDiskCacheWithMaxCacheAge:(NSInteger)maxCacheAge;
+
 @end
