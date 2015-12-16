@@ -22,22 +22,9 @@
     YSVideoPlayControl *control = [[YSVideoPlayControl alloc] initWithTarget:self
                                                                       action:@selector(playControlClicked:)
                                                             forControlEvents:UIControlEventTouchUpInside];
+    control.autoresizingMask = UIViewAutoresizingNone;
     [self.view addSubview:control];
-    
-    [self.view addConstraints:@[[NSLayoutConstraint constraintWithItem:control
-                                                             attribute:NSLayoutAttributeCenterX
-                                                             relatedBy:NSLayoutRelationEqual
-                                                                toItem:self.view
-                                                             attribute:NSLayoutAttributeCenterX
-                                                            multiplier:1.
-                                                              constant:0.],
-                                [NSLayoutConstraint constraintWithItem:control
-                                                             attribute:NSLayoutAttributeCenterY
-                                                             relatedBy:NSLayoutRelationEqual
-                                                                toItem:self.view
-                                                             attribute:NSLayoutAttributeCenterY
-                                                            multiplier:1.
-                                                              constant:0.]]];
+    control.center = CGPointMake(self.view.bounds.size.width/2., self.view.bounds.size.height/2.);
 }
 
 - (void)playControlClicked:(UIButton *)sender

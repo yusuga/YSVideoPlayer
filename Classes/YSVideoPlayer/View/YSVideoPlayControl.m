@@ -25,26 +25,8 @@
     self = [[nib instantiateWithOwner:self options:nil] objectAtIndex:0];
     
     if (self) {
-        self.translatesAutoresizingMaskIntoConstraints = NO;
-        
         [self.button setImage:[YSVideoPlayerStyleKit imageOfPlay] forState:UIControlStateNormal];
-        [self.button addTarget:target action:action forControlEvents:controlEvents];
-        
-        [self addConstraints:@[[NSLayoutConstraint constraintWithItem:self
-                                                            attribute:NSLayoutAttributeWidth
-                                                              relatedBy:NSLayoutRelationEqual
-                                                                 toItem:nil
-                                                              attribute:NSLayoutAttributeWidth
-                                                             multiplier:1.
-                                                               constant:self.bounds.size.width],
-                                 [NSLayoutConstraint constraintWithItem:self
-                                                              attribute:NSLayoutAttributeHeight
-                                                              relatedBy:NSLayoutRelationEqual
-                                                                 toItem:nil
-                                                              attribute:NSLayoutAttributeHeight
-                                                             multiplier:1.
-                                                               constant:self.bounds.size.height]]];
-        [self setNeedsUpdateConstraints];
+        [self.button addTarget:target action:action forControlEvents:controlEvents];        
     }
     
     return self;
