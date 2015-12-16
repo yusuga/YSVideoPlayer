@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'YSVideoPlayer'
-  s.version = '0.0.6'
+  s.version = '0.0.7'
   s.summary = 'YSVideoPlayer'
   s.homepage = 'https://github.com/yusuga/YSMoviePlayer'
   s.license = 'MIT'
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.compiler_flags = '-fmodules'  
   
-  s.dependency 'AFNetworking'
+  s.dependency 'AFNetworking', '~> 2.0'
   s.dependency 'M13ProgressSuite'
   s.dependency 'RMUniversalAlert'
   s.dependency 'KVOController'
