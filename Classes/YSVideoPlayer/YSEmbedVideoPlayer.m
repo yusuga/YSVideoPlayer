@@ -25,6 +25,9 @@ typedef NS_ENUM(NSInteger, PlayerStatus) {
     PlayerStatusEnd,
     PlayerStatusError,
 };
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
 static NSString *NSStringFromPlayerStatus(PlayerStatus status)
 {
     switch (status) {
@@ -50,6 +53,7 @@ static NSString *NSStringFromPlayerStatus(PlayerStatus status)
             break;
     }
 }
+#pragma GCC diagnostic pop
 
 static NSString * const kDownloadSchemeSuffix = @"-download";
 static NSString * const kExtensionMP4 = @"mp4";
@@ -68,6 +72,9 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 
 @property (copy, nonatomic) NSString *URLString;
+@property (nonatomic) PHAsset *asset;
+@property (nonatomic) PHImageRequestID assetRequestID;
+
 @property (weak, nonatomic, readwrite) IBOutlet YSEmbedVideoPlayerView *playerView;
 @property (nonatomic) AVPlayer *player;
 @property (nonatomic) BOOL repeat;
@@ -96,11 +103,23 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 + (YSEmbedVideoPlayer *)playerWithURLString:(NSString *)URLString
                                      repeat:(BOOL)repeat
 {
-    UIStoryboard *sb = [UIStoryboard storyboardWithName:NSStringFromClass([self class]) bundle:nil];
-    YSEmbedVideoPlayer *player = [sb instantiateInitialViewController];
+    YSEmbedVideoPlayer *player = [self player];
     player.URLString = URLString;
     player.repeat = repeat;
     return player;
+}
+
++ (YSEmbedVideoPlayer *)playerWithAsset:(PHAsset *)asset
+{
+    YSEmbedVideoPlayer *player = [self player];
+    player.asset = asset;
+    return player;
+}
+
++ (YSEmbedVideoPlayer *)player
+{
+    UIStoryboard *sb = [UIStoryboard storyboardWithName:NSStringFromClass([self class]) bundle:nil];
+    return [sb instantiateInitialViewController];
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -430,10 +449,11 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     return _playerView;
 }
 
-#pragma mark - Player Item
+#pragma mark - URL
 
 - (NSURL *)videoURL
 {
+    if (!self.URLString) return nil;
     NSURL *URL = [NSURL URLWithString:self.URLString];
     
     if ([self.URLString.pathExtension isEqualToString:kExtensionMP4]) {
@@ -444,6 +464,39 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     return URL;
 }
 
+#pragma mark - Asset
+
+- (void)requestAssetVideo
+{
+    __weak typeof(self) wself = self;
+    self.assetRequestID = [[PHImageManager defaultManager] requestAVAssetForVideo:self.asset
+                                                                          options:[self videoRequestOptions]
+                                                                    resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info)
+                           {
+                               dispatch_async(dispatch_get_main_queue(), ^{
+                                   if ([info[PHImageCancelledKey] boolValue]) return ;
+                                   if (!wself || wself.playerStatus == PlayerStatusNone) return ;
+                                   
+                                   NSError *error   = [info objectForKey:PHImageErrorKey];
+                                   //                                   NSString * title = CTAssetsPickerLocalizedString(@"Cannot Play Stream Video", nil);
+                                   if (error) {
+                                       [wself assetFailedToPrepareForPlayback:error];
+                                   } else {
+                                       [wself prepareToPlayAsset:asset withKeys:nil];
+                                   }
+                               });
+                           }];
+}
+
+- (PHVideoRequestOptions *)videoRequestOptions
+{
+    PHVideoRequestOptions *options  = [PHVideoRequestOptions new];
+    options.networkAccessAllowed    = YES;
+    return options;
+}
+
+#pragma mark - Player Item
+
 - (void)createPlayerItem
 {
     [self activityIndicatorViewShown:YES];
@@ -451,24 +504,31 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     
     self.playerStatus = PlayerStatusWait;
     
-    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:[self videoURL] options:nil];
-    [asset.resourceLoader setDelegate:self queue:dispatch_get_main_queue()];
-    
-    NSArray *requestedKeys = @[@"playable"];
-    
-    /* Tells the asset to load the values of any of the specified keys that are not already loaded. */
-    __weak typeof(self) wself = self;
-    [asset loadValuesAsynchronouslyForKeys:requestedKeys completionHandler:^{
-        dispatch_async( dispatch_get_main_queue(), ^{
-            if (!wself || wself.playerStatus == PlayerStatusNone) return ;
-            
-            /* IMPORTANT: Must dispatch to main queue in order to operate on the AVPlayer and AVPlayerItem. */
-            [wself prepareToPlayAsset:asset withKeys:requestedKeys];
-        });
-    }];
+    if (self.URLString) {
+        AVURLAsset *asset = [AVURLAsset URLAssetWithURL:[self videoURL] options:nil];
+        [asset.resourceLoader setDelegate:self queue:dispatch_get_main_queue()];
+        
+        NSArray *requestedKeys = @[@"playable"];
+        
+        /* Tells the asset to load the values of any of the specified keys that are not already loaded. */
+        __weak typeof(self) wself = self;
+        [asset loadValuesAsynchronouslyForKeys:requestedKeys completionHandler:^{
+            dispatch_async( dispatch_get_main_queue(), ^{
+                if (!wself || wself.playerStatus == PlayerStatusNone) return ;
+                
+                /* IMPORTANT: Must dispatch to main queue in order to operate on the AVPlayer and AVPlayerItem. */
+                [wself prepareToPlayAsset:asset withKeys:requestedKeys];
+            });
+        }];
+    } else if (self.asset) {
+        [self requestAssetVideo];
+    } else {
+        NSAssert(false, @"Unsupported flow");
+        self.playerStatus = PlayerStatusError;
+    }
 }
 
-- (void)prepareToPlayAsset:(AVURLAsset *)asset withKeys:(NSArray *)requestedKeys
+- (void)prepareToPlayAsset:(AVAsset *)asset withKeys:(NSArray *)requestedKeys
 {
     for (NSString *thisKey in requestedKeys) {
         NSError *error = nil;
@@ -704,6 +764,10 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     self.downloadTask = nil;
     self.downloadError = nil;
     
+    if (self.assetRequestID) {
+        [[PHImageManager defaultManager] cancelImageRequest:self.assetRequestID];
+    }
+    
     [self.playerView setPlayer:nil];
     
     [self.player pause];
@@ -870,12 +934,14 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 
 - (NSURL *)cachedVideoFileURL
 {
+    if (!self.URLString) return nil;
     return [[[self class] cacheDirecotryFileURL] URLByAppendingPathComponent:self.URLString.lastPathComponent];
 }
 
 - (BOOL)isCachedVideo
 {
-    return [[NSFileManager defaultManager] fileExistsAtPath:[self cachedVideoFileURL].path];
+    NSURL *URL = [self cachedVideoFileURL];
+    return URL ? [[NSFileManager defaultManager] fileExistsAtPath:URL.path] : NO;
 }
 
 + (void)deleteDiskCache

@@ -1,5 +1,8 @@
-platform :ios, '7.0'
-pod 'AFNetworking'
+platform :ios, '8.0'
+pod 'AFNetworking', '~> 2.0'
 pod 'M13ProgressSuite'
 pod 'RMUniversalAlert'
 pod 'KVOController'
+
+# Example
+pod 'CTAssetsPickerController'

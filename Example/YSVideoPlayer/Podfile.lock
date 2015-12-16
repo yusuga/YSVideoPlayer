@@ -20,8 +20,11 @@ PODS:
   - AFNetworking/UIKit (2.6.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
+  - CTAssetsPickerController (3.2.1):
+    - PureLayout (~> 3.0.0)
   - KVOController (1.0.3)
   - M13ProgressSuite (1.2.7)
+  - PureLayout (3.0.1)
   - RMUniversalAlert (0.7):
     - RMUniversalAlert/Core (= 0.7)
   - RMUniversalAlert/Core (0.7):
@@ -33,15 +36,18 @@ PODS:
   - UIAlertView+Blocks (0.9)
 
 DEPENDENCIES:
-  - AFNetworking
+  - AFNetworking (~> 2.0)
+  - CTAssetsPickerController
   - KVOController
   - M13ProgressSuite
   - RMUniversalAlert
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
+  CTAssetsPickerController: 629e3c452efe92627b6386f572fc4e2f31533880
   KVOController: 9fd8f0343670994e4b6f9f0b31f5a45663f3e1cf
   M13ProgressSuite: 03d194af6359da440641ba758aed5a18b0386a86
+  PureLayout: f35f5384c9c4e4479df041dbe33ad7577b71ddfb
   RMUniversalAlert: bce2ca406c24065b76665725c83e48006e8f65f8
   UIActionSheet+Blocks: e180b7dad0a721ab7f212ac9742af799008bb358
   UIAlertController+Blocks: b48c673ff60726da468b32ab21bbc7683512d45b

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+@import Photos;
 #import "YSEmbedVideoPlayerView.h"
 
 @interface YSEmbedVideoPlayer : UIViewController
@@ -14,6 +15,8 @@
 + (YSEmbedVideoPlayer *)playerWithURLString:(NSString *)URLString;
 + (YSEmbedVideoPlayer *)playerWithURLString:(NSString *)URLString
                                       repeat:(BOOL)repeat;
+
++ (YSEmbedVideoPlayer *)playerWithAsset:(PHAsset *)asset;
 
 @property (weak, nonatomic, readonly) IBOutlet YSEmbedVideoPlayerView *playerView;
 

@@ -24,6 +24,9 @@
 		B84FE13A1C0719E700366011 /* YSVideoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B84FE1311C0719E700366011 /* YSVideoPlayer.m */; };
 		B8662B1B1C060D5000C9E7F2 /* InlineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B8662B1A1C060D5000C9E7F2 /* InlineViewController.m */; };
 		B86B3D6B1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B86B3D6D1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard */; };
+		B87815541C2111D800141188 /* AssetsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815531C2111D800141188 /* AssetsViewController.m */; };
+		B87815571C2115EC00141188 /* AssetViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815561C2115EC00141188 /* AssetViewCell.m */; };
+		B878155A1C211C9D00141188 /* PlaybackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815591C211C9D00141188 /* PlaybackViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +62,12 @@
 		B8662B1A1C060D5000C9E7F2 /* InlineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InlineViewController.m; sourceTree = "<group>"; };
 		B86B3D6C1C082B1C002FB646 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/YSEmbedVideoPlayer.storyboard; sourceTree = "<group>"; };
 		B86B3D6E1C082B33002FB646 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/YSEmbedVideoPlayer.strings; sourceTree = "<group>"; };
+		B87815521C2111D800141188 /* AssetsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssetsViewController.h; sourceTree = "<group>"; };
+		B87815531C2111D800141188 /* AssetsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssetsViewController.m; sourceTree = "<group>"; };
+		B87815551C2115EC00141188 /* AssetViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssetViewCell.h; sourceTree = "<group>"; };
+		B87815561C2115EC00141188 /* AssetViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssetViewCell.m; sourceTree = "<group>"; };
+		B87815581C211C9D00141188 /* PlaybackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaybackViewController.h; sourceTree = "<group>"; };
+		B87815591C211C9D00141188 /* PlaybackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaybackViewController.m; sourceTree = "<group>"; };
 		B8C59ADFFC70BB9C72624945 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -95,7 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				B81980281BFF3E4D0069A5E0 /* YSVideoPlayer */,
-				B84FE11C1C0719E700366011 /* YSVideoPlayer */,
+				B84FE11C1C0719E700366011 /* YSVideoPlayerExample */,
 				B81980271BFF3E4D0069A5E0 /* Products */,
 				58AB73331B67444784048179 /* Pods */,
 				84824954AFAAF643F14A1F1D /* Frameworks */,
@@ -120,6 +129,12 @@
 				B81980451BFF441F0069A5E0 /* TableViewController.m */,
 				B8662B191C060D5000C9E7F2 /* InlineViewController.h */,
 				B8662B1A1C060D5000C9E7F2 /* InlineViewController.m */,
+				B87815521C2111D800141188 /* AssetsViewController.h */,
+				B87815531C2111D800141188 /* AssetsViewController.m */,
+				B87815551C2115EC00141188 /* AssetViewCell.h */,
+				B87815561C2115EC00141188 /* AssetViewCell.m */,
+				B87815581C211C9D00141188 /* PlaybackViewController.h */,
+				B87815591C211C9D00141188 /* PlaybackViewController.m */,
 				B81980351BFF3E4D0069A5E0 /* Assets.xcassets */,
 				B81980371BFF3E4D0069A5E0 /* LaunchScreen.storyboard */,
 				B819803A1BFF3E4D0069A5E0 /* Info.plist */,
@@ -136,7 +151,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		B84FE11C1C0719E700366011 /* YSVideoPlayer */ = {
+		B84FE11C1C0719E700366011 /* YSVideoPlayerExample */ = {
 			isa = PBXGroup;
 			children = (
 				B84FE1301C0719E700366011 /* YSVideoPlayer.h */,
@@ -149,7 +164,7 @@
 				B84FE11D1C0719E700366011 /* Category */,
 				B84FE1221C0719E700366011 /* Image */,
 			);
-			name = YSVideoPlayer;
+			name = YSVideoPlayerExample;
 			path = ../../Classes/YSVideoPlayer;
 			sourceTree = "<group>";
 		};
@@ -329,12 +344,15 @@
 				B819802E1BFF3E4D0069A5E0 /* AppDelegate.m in Sources */,
 				B84FE1351C0719E700366011 /* YSVideoPlayerWeakObject.m in Sources */,
 				B84FE1371C0719E700366011 /* YSVideoSlider.m in Sources */,
+				B87815541C2111D800141188 /* AssetsViewController.m in Sources */,
 				B84FE13A1C0719E700366011 /* YSVideoPlayer.m in Sources */,
 				B819802B1BFF3E4D0069A5E0 /* main.m in Sources */,
 				B81980461BFF441F0069A5E0 /* TableViewController.m in Sources */,
 				B8662B1B1C060D5000C9E7F2 /* InlineViewController.m in Sources */,
+				B878155A1C211C9D00141188 /* PlaybackViewController.m in Sources */,
 				B84FE1331C0719E700366011 /* MPMoviePlayerController+YSVideoPlayer.m in Sources */,
 				B84FE1361C0719E700366011 /* YSEmbedVideoPlayerView.m in Sources */,
+				B87815571C2115EC00141188 /* AssetViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -458,7 +476,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
 				INFOPLIST_FILE = YSVideoPlayer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yusuga.YSVideoPlayer;
 				PRODUCT_NAME = YSVideoPlayer;
@@ -472,7 +490,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = "Brand Assets";
 				INFOPLIST_FILE = YSVideoPlayer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.yusuga.YSVideoPlayer;
 				PRODUCT_NAME = YSVideoPlayer;
