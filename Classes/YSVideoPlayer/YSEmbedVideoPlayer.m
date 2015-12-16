@@ -65,10 +65,12 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicatorView;
 @property (weak, nonatomic) IBOutlet UIButton *errorButton;
 
-@property (weak, nonatomic) IBOutlet UIView *controlsView;
-@property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (weak, nonatomic) IBOutlet UIView *controlView;
 @property (weak, nonatomic) IBOutlet UIButton *controlButton;
-@property (weak, nonatomic) IBOutlet UISlider *scrubber;
+
+@property (weak, nonatomic) IBOutlet UIView *scrubbarView;
+@property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (weak, nonatomic) IBOutlet UISlider *scrubbar;
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 
 @property (copy, nonatomic) NSString *URLString;
@@ -161,7 +163,7 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     
     /* Scrubber */
     __weak typeof(self) wself = self;
-    [self.KVOController observe:self.scrubber
+    [self.KVOController observe:self.scrubbar
                         keyPath:NSStringFromSelector(@selector(value))
                         options:NSKeyValueObservingOptionNew
                           block:^(id observer, id object, NSDictionary *change)
@@ -246,7 +248,12 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     return self.activityIndicatorContainer.alpha == 1.;
 }
 
-#pragma mark - Controls View
+#pragma mark - Control view
+
+- (NSArray *)controlViews
+{
+    return @[self.controlView, self.scrubbarView];
+}
 
 - (void)hideContolsViewAfterDelay
 {
@@ -271,13 +278,15 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 - (void)contolsViewShown:(BOOL)shown animated:(BOOL)animated
 {
     [UIView animateWithDuration:animated ? 0.3 : 0. animations:^{
-        self.controlsView.alpha = shown ? 1. : 0.;
+        for (UIView *view in [self controlViews]) {
+            view.alpha = shown ? 1. : 0.;
+        }
     }];
 }
 
 - (BOOL)isCotrolsViewShown
 {
-    return self.controlsView.alpha != 0.;
+    return self.controlView.alpha != 0.;
 }
 
 #pragma mark Control Button
@@ -290,6 +299,7 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
             break;
         case PlayerStatusBufferLoading:
         case PlayerStatusPause:
+            [self hideContolsView];
             self.playerStatus = PlayerStatusPlay;
             break;
         case PlayerStatusEnd:
@@ -326,16 +336,16 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 {
     CMTime playerDuration = [self playerItemDuration];
     if (CMTIME_IS_INVALID(playerDuration)) {
-        self.scrubber.minimumValue = 0.;
+        self.scrubbar.minimumValue = 0.;
         return;
     }
     
     double duration = CMTimeGetSeconds(playerDuration);
     if (isfinite(duration)) {
-        float minValue = [self.scrubber minimumValue];
-        float maxValue = [self.scrubber maximumValue];
+        float minValue = [self.scrubbar minimumValue];
+        float maxValue = [self.scrubbar maximumValue];
         double time = CMTimeGetSeconds([self.player currentTime]);
-        [self.scrubber setValue:(maxValue - minValue) * time / duration + minValue];
+        [self.scrubbar setValue:(maxValue - minValue) * time / duration + minValue];
     }
 }
 
@@ -578,7 +588,7 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
                  wself.playerStatus = PlayerStatusNone;
                  break;
              case AVPlayerItemStatusReadyToPlay:
-                 if (!wself.scrubber.tracking && wself.playerStatus != PlayerStatusPause) {
+                 if (!wself.scrubbar.tracking && wself.playerStatus != PlayerStatusPause) {
                      [wself hideContolsViewAfterDelay];
                      [wself addPlayerTimeObserver];
                      wself.playerStatus = PlayerStatusPlay;
