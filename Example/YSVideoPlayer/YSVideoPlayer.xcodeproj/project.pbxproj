@@ -27,6 +27,9 @@
 		B87815541C2111D800141188 /* AssetsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815531C2111D800141188 /* AssetsViewController.m */; };
 		B87815571C2115EC00141188 /* AssetViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815561C2115EC00141188 /* AssetViewCell.m */; };
 		B878155A1C211C9D00141188 /* PlaybackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815591C211C9D00141188 /* PlaybackViewController.m */; };
+		B87815611C21A33500141188 /* YSVideoPlayControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = B87815601C21A33500141188 /* YSVideoPlayControl.xib */; };
+		B87815641C21A54000141188 /* PlayControlViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815631C21A54000141188 /* PlayControlViewController.m */; };
+		B87815671C21A6A400141188 /* YSVideoPlayControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815661C21A6A400141188 /* YSVideoPlayControl.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +71,11 @@
 		B87815561C2115EC00141188 /* AssetViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssetViewCell.m; sourceTree = "<group>"; };
 		B87815581C211C9D00141188 /* PlaybackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaybackViewController.h; sourceTree = "<group>"; };
 		B87815591C211C9D00141188 /* PlaybackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaybackViewController.m; sourceTree = "<group>"; };
+		B87815601C21A33500141188 /* YSVideoPlayControl.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = YSVideoPlayControl.xib; sourceTree = "<group>"; };
+		B87815621C21A54000141188 /* PlayControlViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayControlViewController.h; sourceTree = "<group>"; };
+		B87815631C21A54000141188 /* PlayControlViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayControlViewController.m; sourceTree = "<group>"; };
+		B87815651C21A6A400141188 /* YSVideoPlayControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSVideoPlayControl.h; sourceTree = "<group>"; };
+		B87815661C21A6A400141188 /* YSVideoPlayControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSVideoPlayControl.m; sourceTree = "<group>"; };
 		B8C59ADFFC70BB9C72624945 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -135,6 +143,8 @@
 				B87815561C2115EC00141188 /* AssetViewCell.m */,
 				B87815581C211C9D00141188 /* PlaybackViewController.h */,
 				B87815591C211C9D00141188 /* PlaybackViewController.m */,
+				B87815621C21A54000141188 /* PlayControlViewController.h */,
+				B87815631C21A54000141188 /* PlayControlViewController.m */,
 				B81980351BFF3E4D0069A5E0 /* Assets.xcassets */,
 				B81980371BFF3E4D0069A5E0 /* LaunchScreen.storyboard */,
 				B819803A1BFF3E4D0069A5E0 /* Info.plist */,
@@ -204,6 +214,9 @@
 				B84FE12A1C0719E700366011 /* YSEmbedVideoPlayerView.m */,
 				B84FE12B1C0719E700366011 /* YSVideoSlider.h */,
 				B84FE12C1C0719E700366011 /* YSVideoSlider.m */,
+				B87815651C21A6A400141188 /* YSVideoPlayControl.h */,
+				B87815661C21A6A400141188 /* YSVideoPlayControl.m */,
+				B87815601C21A33500141188 /* YSVideoPlayControl.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -279,6 +292,7 @@
 				B81980391BFF3E4D0069A5E0 /* LaunchScreen.storyboard in Resources */,
 				B81980361BFF3E4D0069A5E0 /* Assets.xcassets in Resources */,
 				B86B3D6B1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard in Resources */,
+				B87815611C21A33500141188 /* YSVideoPlayControl.xib in Resources */,
 				B81980341BFF3E4D0069A5E0 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -342,10 +356,12 @@
 				B84FE1381C0719E700366011 /* YSEmbedVideoPlayer.m in Sources */,
 				B84FE1321C0719E700366011 /* AVPlayerItem+YSVideoPlayer.m in Sources */,
 				B819802E1BFF3E4D0069A5E0 /* AppDelegate.m in Sources */,
+				B87815671C21A6A400141188 /* YSVideoPlayControl.m in Sources */,
 				B84FE1351C0719E700366011 /* YSVideoPlayerWeakObject.m in Sources */,
 				B84FE1371C0719E700366011 /* YSVideoSlider.m in Sources */,
 				B87815541C2111D800141188 /* AssetsViewController.m in Sources */,
 				B84FE13A1C0719E700366011 /* YSVideoPlayer.m in Sources */,
+				B87815641C21A54000141188 /* PlayControlViewController.m in Sources */,
 				B819802B1BFF3E4D0069A5E0 /* main.m in Sources */,
 				B81980461BFF441F0069A5E0 /* TableViewController.m in Sources */,
 				B8662B1B1C060D5000C9E7F2 /* InlineViewController.m in Sources */,
