@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = 'YSVideoPlayer'
-  s.version = '0.0.9'
+  s.version = '0.0.10'
   s.summary = 'YSVideoPlayer'
   s.homepage = 'https://github.com/yusuga/YSMoviePlayer'
   s.license = 'MIT'
