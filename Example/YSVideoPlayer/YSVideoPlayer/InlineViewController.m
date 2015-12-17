@@ -41,6 +41,7 @@
     switch (self.videoControl.selectedSegmentIndex) {
         case 0:
             URLStr = @"http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8";
+            // URLStr = @"http://devstreaming.apple.com/videos/wwdc/2015/1026npwuy2crj2xyuq11/102/hls_vod_mvp.m3u8"; // Long video
             break;
         case 1:
             URLStr = @"https://video.twimg.com/ext_tw_video/560070131976392705/pu/pl/r1kgzh5PmLgium3-.m3u8";

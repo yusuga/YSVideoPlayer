@@ -30,7 +30,19 @@
 		B87815611C21A33500141188 /* YSVideoPlayControl.xib in Resources */ = {isa = PBXBuildFile; fileRef = B87815601C21A33500141188 /* YSVideoPlayControl.xib */; };
 		B87815641C21A54000141188 /* PlayControlViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815631C21A54000141188 /* PlayControlViewController.m */; };
 		B87815671C21A6A400141188 /* YSVideoPlayControl.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815661C21A6A400141188 /* YSVideoPlayControl.m */; };
+		B87815781C226D4600141188 /* YSVideoPlayerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815771C226D4600141188 /* YSVideoPlayerTests.m */; };
+		B87815811C22822B00141188 /* YSVideoTimeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = B87815801C22822B00141188 /* YSVideoTimeLabel.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B878157A1C226D4600141188 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B819801E1BFF3E4D0069A5E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B81980251BFF3E4D0069A5E0;
+			remoteInfo = YSVideoPlayer;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		9D544D8DA418FFAF4BBB9824 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
@@ -76,6 +88,11 @@
 		B87815631C21A54000141188 /* PlayControlViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayControlViewController.m; sourceTree = "<group>"; };
 		B87815651C21A6A400141188 /* YSVideoPlayControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSVideoPlayControl.h; sourceTree = "<group>"; };
 		B87815661C21A6A400141188 /* YSVideoPlayControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSVideoPlayControl.m; sourceTree = "<group>"; };
+		B87815751C226D4600141188 /* YSVideoPlayerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YSVideoPlayerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B87815771C226D4600141188 /* YSVideoPlayerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YSVideoPlayerTests.m; sourceTree = "<group>"; };
+		B87815791C226D4600141188 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B878157F1C22822B00141188 /* YSVideoTimeLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YSVideoTimeLabel.h; sourceTree = "<group>"; };
+		B87815801C22822B00141188 /* YSVideoTimeLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YSVideoTimeLabel.m; sourceTree = "<group>"; };
 		B8C59ADFFC70BB9C72624945 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,6 +102,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A693CD3AF75FC98DAF92863 /* libPods.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B87815721C226D4600141188 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -113,6 +137,7 @@
 			children = (
 				B81980281BFF3E4D0069A5E0 /* YSVideoPlayer */,
 				B84FE11C1C0719E700366011 /* YSVideoPlayerExample */,
+				B87815761C226D4600141188 /* YSVideoPlayerTests */,
 				B81980271BFF3E4D0069A5E0 /* Products */,
 				58AB73331B67444784048179 /* Pods */,
 				84824954AFAAF643F14A1F1D /* Frameworks */,
@@ -123,6 +148,7 @@
 			isa = PBXGroup;
 			children = (
 				B81980261BFF3E4D0069A5E0 /* YSVideoPlayer.app */,
+				B87815751C226D4600141188 /* YSVideoPlayerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -217,6 +243,8 @@
 				B87815651C21A6A400141188 /* YSVideoPlayControl.h */,
 				B87815661C21A6A400141188 /* YSVideoPlayControl.m */,
 				B87815601C21A33500141188 /* YSVideoPlayControl.xib */,
+				B878157F1C22822B00141188 /* YSVideoTimeLabel.h */,
+				B87815801C22822B00141188 /* YSVideoTimeLabel.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -227,6 +255,15 @@
 				B86B3D6D1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard */,
 			);
 			path = Storyboard;
+			sourceTree = "<group>";
+		};
+		B87815761C226D4600141188 /* YSVideoPlayerTests */ = {
+			isa = PBXGroup;
+			children = (
+				B87815771C226D4600141188 /* YSVideoPlayerTests.m */,
+				B87815791C226D4600141188 /* Info.plist */,
+			);
+			path = YSVideoPlayerTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -252,6 +289,24 @@
 			productReference = B81980261BFF3E4D0069A5E0 /* YSVideoPlayer.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B87815741C226D4600141188 /* YSVideoPlayerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B878157E1C226D4600141188 /* Build configuration list for PBXNativeTarget "YSVideoPlayerTests" */;
+			buildPhases = (
+				B87815711C226D4600141188 /* Sources */,
+				B87815721C226D4600141188 /* Frameworks */,
+				B87815731C226D4600141188 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B878157B1C226D4600141188 /* PBXTargetDependency */,
+			);
+			name = YSVideoPlayerTests;
+			productName = YSVideoPlayerTests;
+			productReference = B87815751C226D4600141188 /* YSVideoPlayerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -263,6 +318,10 @@
 				TargetAttributes = {
 					B81980251BFF3E4D0069A5E0 = {
 						CreatedOnToolsVersion = 7.1.1;
+					};
+					B87815741C226D4600141188 = {
+						CreatedOnToolsVersion = 7.2;
+						TestTargetID = B81980251BFF3E4D0069A5E0;
 					};
 				};
 			};
@@ -280,6 +339,7 @@
 			projectRoot = "";
 			targets = (
 				B81980251BFF3E4D0069A5E0 /* YSVideoPlayer */,
+				B87815741C226D4600141188 /* YSVideoPlayerTests */,
 			);
 		};
 /* End PBXProject section */
@@ -294,6 +354,13 @@
 				B86B3D6B1C082B1C002FB646 /* YSEmbedVideoPlayer.storyboard in Resources */,
 				B87815611C21A33500141188 /* YSVideoPlayControl.xib in Resources */,
 				B81980341BFF3E4D0069A5E0 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B87815731C226D4600141188 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -353,6 +420,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B84FE1341C0719E700366011 /* YSVideoPlayerStyleKit.m in Sources */,
+				B87815811C22822B00141188 /* YSVideoTimeLabel.m in Sources */,
 				B84FE1381C0719E700366011 /* YSEmbedVideoPlayer.m in Sources */,
 				B84FE1321C0719E700366011 /* AVPlayerItem+YSVideoPlayer.m in Sources */,
 				B819802E1BFF3E4D0069A5E0 /* AppDelegate.m in Sources */,
@@ -372,7 +440,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B87815711C226D4600141188 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B87815781C226D4600141188 /* YSVideoPlayerTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B878157B1C226D4600141188 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B81980251BFF3E4D0069A5E0 /* YSVideoPlayer */;
+			targetProxy = B878157A1C226D4600141188 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		B81980321BFF3E4D0069A5E0 /* Main.storyboard */ = {
@@ -513,6 +597,32 @@
 			};
 			name = Release;
 		};
+		B878157C1C226D4600141188 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = YSVideoPlayerTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yusuga.YSVideoPlayerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YSVideoPlayer.app/YSVideoPlayer";
+			};
+			name = Debug;
+		};
+		B878157D1C226D4600141188 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = YSVideoPlayerTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.yusuga.YSVideoPlayerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YSVideoPlayer.app/YSVideoPlayer";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -530,6 +640,15 @@
 			buildConfigurations = (
 				B819803E1BFF3E4D0069A5E0 /* Debug */,
 				B819803F1BFF3E4D0069A5E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B878157E1C226D4600141188 /* Build configuration list for PBXNativeTarget "YSVideoPlayerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B878157C1C226D4600141188 /* Debug */,
+				B878157D1C226D4600141188 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

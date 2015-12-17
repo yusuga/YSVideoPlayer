@@ -13,6 +13,7 @@
 #import <RMUniversalAlert/RMUniversalAlert.h>
 #import <M13ProgressSuite/M13ProgressViewRing.h>
 #import <KVOController/FBKVOController.h>
+#import "YSVideoTimeLabel.h"
 #import "YSVideoPlayerStyleKit.h"
 
 typedef NS_ENUM(NSInteger, PlayerStatus) {
@@ -68,10 +69,10 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 @property (weak, nonatomic) IBOutlet UIView *controlView;
 @property (weak, nonatomic) IBOutlet UIButton *controlButton;
 
-@property (weak, nonatomic) IBOutlet UIView *scrubbarView;
-@property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
-@property (weak, nonatomic) IBOutlet UISlider *scrubbar;
-@property (weak, nonatomic) IBOutlet UILabel *timeLabel;
+@property (weak, nonatomic) IBOutlet UIView *scrubberView;
+@property (weak, nonatomic) IBOutlet UISlider *scrubber;
+@property (weak, nonatomic) IBOutlet YSVideoTimeLabel *currentTimeLabel;
+@property (weak, nonatomic) IBOutlet YSVideoTimeLabel *remainingTimeLabel;
 
 @property (copy, nonatomic) NSString *URLString;
 @property (nonatomic) PHAsset *asset;
@@ -82,7 +83,6 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 @property (nonatomic) BOOL repeat;
 @property (nonatomic) float restoreAfterScrubbingRate;
 @property (nonatomic) Float64 totalTime;
-@property (copy, nonatomic) NSString *totalTimeString;
 
 @property (nonatomic) PlayerStatus playerStatus;
 @property (nonatomic) id timeObserver;
@@ -163,12 +163,12 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     
     /* Scrubber */
     __weak typeof(self) wself = self;
-    [self.KVOController observe:self.scrubbar
+    [self.KVOController observe:self.scrubber
                         keyPath:NSStringFromSelector(@selector(value))
                         options:NSKeyValueObservingOptionNew
                           block:^(id observer, id object, NSDictionary *change)
      {
-         [wself syncTimeLabel];
+         [wself syncTimeLabels];
      }];
     
     /*
@@ -177,8 +177,10 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
      */
     NSDictionary * fontAttributes = @{UIFontDescriptorFeatureSettingsAttribute: @[@{UIFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
                                                                                     UIFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)}]};
-    self.timeLabel.font = [UIFont fontWithDescriptor:[[self.timeLabel.font fontDescriptor] fontDescriptorByAddingAttributes:fontAttributes]
-                                                size:self.timeLabel.font.pointSize];
+    for (UILabel *label in @[self.currentTimeLabel, self.remainingTimeLabel]) {
+        label.font = [UIFont fontWithDescriptor:[[label.font fontDescriptor] fontDescriptorByAddingAttributes:fontAttributes]
+                                           size:label.font.pointSize];
+    }
     
     self.downloadProgressView.showPercentage = NO;
     self.downloadProgressView.primaryColor = [UIColor whiteColor];
@@ -252,7 +254,7 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 
 - (NSArray *)controlViews
 {
-    return @[self.controlView, self.scrubbarView];
+    return @[self.controlView, self.scrubberView];
 }
 
 - (void)hideContolsViewAfterDelay
@@ -336,16 +338,16 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 {
     CMTime playerDuration = [self playerItemDuration];
     if (CMTIME_IS_INVALID(playerDuration)) {
-        self.scrubbar.minimumValue = 0.;
+        self.scrubber.minimumValue = 0.;
         return;
     }
     
     double duration = CMTimeGetSeconds(playerDuration);
     if (isfinite(duration)) {
-        float minValue = [self.scrubbar minimumValue];
-        float maxValue = [self.scrubbar maximumValue];
+        float minValue = [self.scrubber minimumValue];
+        float maxValue = [self.scrubber maximumValue];
         double time = CMTimeGetSeconds([self.player currentTime]);
-        [self.scrubbar setValue:(maxValue - minValue) * time / duration + minValue];
+        [self.scrubber setValue:(maxValue - minValue) * time / duration + minValue];
     }
 }
 
@@ -382,7 +384,7 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
             time = self.totalTime;
         }
         
-        [self updateTimeLabelWithTime:time];
+        [self updateTimeLabelsWithTime:time];
         
         if (time != self.totalTime) {
             self.playerStatus = PlayerStatusBufferLoading;
@@ -428,27 +430,33 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 
 #pragma mark Time Label
 
-- (void)syncTimeLabel
+- (void)syncTimeLabels
 {
-    [self updateTimeLabelWithTime:[self currentTime]];
+    [self updateTimeLabelsWithTime:[self currentTime]];
 }
 
-- (void)updateTimeLabelWithTime:(Float64)time
+- (void)updateTimeLabelsWithTime:(Float64)time
 {
-    NSString *currentStr = [self timeStringFromTimeInterval:time];
-    
-    if (currentStr.length < self.totalTimeString.length) {
-        while (currentStr.length < self.totalTimeString.length) {
-            currentStr = [NSString stringWithFormat:@"0%@", currentStr];
-        }
+    self.currentTimeLabel.text = [self clockFormattedStringFromTime:time];
+    self.remainingTimeLabel.text = [NSString stringWithFormat:@"-%@", [self clockFormattedStringFromTime:self.totalTime - time]];
+}
+
+- (NSString *)clockFormattedStringFromTime:(Float64)time
+{
+    if (time < 0.) {
+        time = 0.;
     }
     
-    self.timeLabel.text = [NSString stringWithFormat:@"%@ / %@", currentStr, self.totalTimeString];
-}
-
-- (NSString *)timeStringFromTimeInterval:(NSTimeInterval)time
-{
-    return [NSString stringWithFormat:@"%li:%02li", lround(floor(time / 60.)), lround(floor(time)) % 60];
+    if (time < 3600.) {
+        return [NSString stringWithFormat:@"%li:%02li",
+                lround(floor(time / 60.)) % 60,
+                lround(floor(time)) % 60];
+    } else {
+        return [NSString stringWithFormat:@"%li:%02li:%02li",
+                lround(floor(time / 3600.)) % 100,
+                lround(floor(time / 60.)) % 60,
+                lround(floor(time)) % 60];
+    }
 }
 
 #pragma mark - Player View
@@ -573,7 +581,21 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:asset];
     
     self.totalTime = CMTimeGetSeconds(asset.duration);
-    self.totalTimeString = [self timeStringFromTimeInterval:self.totalTime];
+    
+    /* Calculate time labels width */
+    
+    NSString *totalTimeStr = [self clockFormattedStringFromTime:self.totalTime];
+    UILabel *calculationLabel = [[UILabel alloc] init];
+    calculationLabel.font = self.currentTimeLabel.font;
+    
+    calculationLabel.text = totalTimeStr;
+    self.currentTimeLabel.intrinsicContentWidth = [calculationLabel intrinsicContentSize].width;
+    
+    calculationLabel.font = self.remainingTimeLabel.font;
+    calculationLabel.text = [NSString stringWithFormat:@"-%@", totalTimeStr];
+    self.remainingTimeLabel.intrinsicContentWidth = [calculationLabel intrinsicContentSize].width;
+    
+    /* Register KVO */
     
     [self.KVOController observe:playerItem
                         keyPath:NSStringFromSelector(@selector(status))
@@ -588,7 +610,7 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
                  wself.playerStatus = PlayerStatusNone;
                  break;
              case AVPlayerItemStatusReadyToPlay:
-                 if (!wself.scrubbar.tracking && wself.playerStatus != PlayerStatusPause) {
+                 if (!wself.scrubber.tracking && wself.playerStatus != PlayerStatusPause) {
                      [wself hideContolsViewAfterDelay];
                      [wself addPlayerTimeObserver];
                      wself.playerStatus = PlayerStatusPlay;
