@@ -12,7 +12,7 @@
 #import <AFNetworking/AFNetworking.h>
 #import <RMUniversalAlert/RMUniversalAlert.h>
 #import <M13ProgressSuite/M13ProgressViewRing.h>
-#import <KVOController/FBKVOController.h>
+#import <KVOController/NSObject+FBKVOController.h>
 #import "YSVideoTimeLabel.h"
 #import "YSVideoPlayerStyleKit.h"
 

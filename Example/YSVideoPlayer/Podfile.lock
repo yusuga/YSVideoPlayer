@@ -20,9 +20,9 @@ PODS:
   - AFNetworking/UIKit (2.6.3):
     - AFNetworking/NSURLConnection
     - AFNetworking/NSURLSession
-  - CTAssetsPickerController (3.2.1):
+  - CTAssetsPickerController (3.3.1):
     - PureLayout (~> 3.0.0)
-  - KVOController (1.0.3)
+  - KVOController (1.1.0)
   - M13ProgressSuite (1.2.7)
   - PureLayout (3.0.1)
   - RMUniversalAlert (0.7):
@@ -44,8 +44,8 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: cb8d14a848e831097108418f5d49217339d4eb60
-  CTAssetsPickerController: 629e3c452efe92627b6386f572fc4e2f31533880
-  KVOController: 9fd8f0343670994e4b6f9f0b31f5a45663f3e1cf
+  CTAssetsPickerController: b1d1d50ab87cf6b8b13531de5f4530482e7e53ed
+  KVOController: 321b5fc59300fcaabd42c0f679baa7a27efbb2fd
   M13ProgressSuite: 03d194af6359da440641ba758aed5a18b0386a86
   PureLayout: f35f5384c9c4e4479df041dbe33ad7577b71ddfb
   RMUniversalAlert: bce2ca406c24065b76665725c83e48006e8f65f8
