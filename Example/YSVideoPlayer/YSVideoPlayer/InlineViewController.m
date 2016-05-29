@@ -21,15 +21,22 @@
 
 @implementation InlineViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self registerNotifications];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     
+    [self unregisterNotifications];
     [self removePlayer];
 }
 
@@ -84,6 +91,30 @@
 {
     NSLog(@"%s", __func__);
     [YSEmbedVideoPlayer deleteDiskCache];
+}
+
+#pragma mark - Notification
+
+- (void)registerNotifications
+{
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    
+    [center addObserver:self
+               selector:@selector(embedVideoPlayerDidChangeContolsViewShownNotification:)
+                   name:YSEmbedVideoPlayerDidChangeContolsViewShownNotification
+                 object:nil];
+}
+
+- (void)unregisterNotifications
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark Handler
+
+- (void)embedVideoPlayerDidChangeContolsViewShownNotification:(NSNotification *)noti
+{
+    NSLog(@"%s, noti: %@", __func__, noti);
 }
 
 @end

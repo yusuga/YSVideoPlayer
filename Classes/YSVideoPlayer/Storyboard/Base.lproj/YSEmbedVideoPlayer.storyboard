@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Osq-dd-17A">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Osq-dd-17A">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <scenes>
         <!--Embed Video Player-->
@@ -21,25 +21,18 @@
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <subviews>
                                     <view alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="a3w-y2-gCs" userLabel="Scrubber View">
-                                        <rect key="frame" x="0.0" y="566" width="600" height="34"/>
+                                        <rect key="frame" x="0.0" y="556" width="600" height="44"/>
                                         <subviews>
-                                            <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aLe-c9-r3r">
-                                                <rect key="frame" x="0.0" y="0.0" width="600" height="34"/>
-                                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="qW9-BP-jkQ">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="34"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                </view>
-                                                <blurEffect style="light"/>
-                                            </visualEffectView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--:--" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H47-Nm-21G" customClass="YSVideoTimeLabel">
-                                                <rect key="frame" x="10" y="9" width="28.5" height="16"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                <rect key="frame" x="10" y="15.5" width="24.5" height="13.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Xvz-nG-2DB" customClass="YSVideoSlider">
-                                                <rect key="frame" x="46.5" y="0.0" width="507" height="35"/>
+                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="Xvz-nG-2DB" customClass="YSVideoSlider">
+                                                <rect key="frame" x="42.5" y="0.0" width="515" height="45"/>
                                                 <color key="minimumTrackTintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                <color key="maximumTrackTintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="maximumTrackTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                                 <connections>
                                                     <action selector="beginScrubbing:" destination="Osq-dd-17A" eventType="touchDown" id="s8K-eh-uZw"/>
                                                     <action selector="endScrubbing:" destination="Osq-dd-17A" eventType="touchUpOutside" id="Tnu-Sa-o9c"/>
@@ -50,36 +43,25 @@
                                                 </connections>
                                             </slider>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--:--" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JB4-xm-j36" customClass="YSVideoTimeLabel">
-                                                <rect key="frame" x="561.5" y="9" width="28.5" height="16"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                <rect key="frame" x="565.5" y="15.5" width="24.5" height="13.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <constraints>
-                                            <constraint firstItem="aLe-c9-r3r" firstAttribute="top" secondItem="a3w-y2-gCs" secondAttribute="top" id="2NB-mg-Ew0"/>
                                             <constraint firstItem="JB4-xm-j36" firstAttribute="leading" secondItem="Xvz-nG-2DB" secondAttribute="trailing" constant="10" id="3bP-Km-AMC"/>
                                             <constraint firstItem="Xvz-nG-2DB" firstAttribute="top" secondItem="a3w-y2-gCs" secondAttribute="top" id="3nv-8L-l6X"/>
                                             <constraint firstItem="H47-Nm-21G" firstAttribute="centerY" secondItem="a3w-y2-gCs" secondAttribute="centerY" id="7Z2-79-2ED"/>
-                                            <constraint firstItem="Xvz-nG-2DB" firstAttribute="leading" secondItem="a3w-y2-gCs" secondAttribute="leading" constant="10" id="BEV-Zp-uda"/>
                                             <constraint firstItem="Xvz-nG-2DB" firstAttribute="leading" secondItem="H47-Nm-21G" secondAttribute="trailing" constant="10" id="Dia-Ky-48J"/>
                                             <constraint firstItem="JB4-xm-j36" firstAttribute="centerY" secondItem="a3w-y2-gCs" secondAttribute="centerY" id="LkG-mP-oV3"/>
-                                            <constraint firstAttribute="trailing" secondItem="aLe-c9-r3r" secondAttribute="trailing" id="Ojm-MX-vEz"/>
-                                            <constraint firstItem="aLe-c9-r3r" firstAttribute="leading" secondItem="a3w-y2-gCs" secondAttribute="leading" id="R8Y-CY-QrK"/>
                                             <constraint firstItem="Xvz-nG-2DB" firstAttribute="centerY" secondItem="a3w-y2-gCs" secondAttribute="centerY" id="Sfq-Ug-Len"/>
                                             <constraint firstItem="H47-Nm-21G" firstAttribute="leading" secondItem="a3w-y2-gCs" secondAttribute="leading" constant="10" id="bjn-cD-Ikc"/>
                                             <constraint firstAttribute="trailing" secondItem="JB4-xm-j36" secondAttribute="trailing" constant="10" id="f4Q-Xk-Uln"/>
-                                            <constraint firstItem="Xvz-nG-2DB" firstAttribute="leading" secondItem="a3w-y2-gCs" secondAttribute="leading" constant="10" id="kDT-I5-kje"/>
-                                            <constraint firstAttribute="height" constant="34" id="lZI-PW-cYk"/>
+                                            <constraint firstAttribute="height" constant="44" id="lZI-PW-cYk"/>
                                             <constraint firstAttribute="bottom" secondItem="Xvz-nG-2DB" secondAttribute="bottom" id="w0i-Oq-fGK"/>
-                                            <constraint firstAttribute="bottom" secondItem="aLe-c9-r3r" secondAttribute="bottom" id="yIK-3i-6uJ"/>
                                         </constraints>
-                                        <variation key="default">
-                                            <mask key="constraints">
-                                                <exclude reference="BEV-Zp-uda"/>
-                                                <exclude reference="kDT-I5-kje"/>
-                                            </mask>
-                                        </variation>
                                     </view>
                                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mkt-Ew-M9c">
                                         <rect key="frame" x="270" y="270" width="60" height="60"/>
@@ -135,12 +117,11 @@
                                     <constraint firstItem="a3w-y2-gCs" firstAttribute="leading" secondItem="MWl-fB-5J1" secondAttribute="leading" id="2sj-BB-8rb"/>
                                     <constraint firstAttribute="bottom" secondItem="a3w-y2-gCs" secondAttribute="bottom" id="Ila-84-Ijg"/>
                                     <constraint firstItem="mkt-Ew-M9c" firstAttribute="centerX" secondItem="MWl-fB-5J1" secondAttribute="centerX" id="U0f-m0-iFC"/>
-                                    <constraint firstItem="mkt-Ew-M9c" firstAttribute="centerY" secondItem="MWl-fB-5J1" secondAttribute="centerY" id="U6z-zM-it8"/>
+                                    <constraint firstItem="mkt-Ew-M9c" firstAttribute="centerY" secondItem="MWl-fB-5J1" secondAttribute="centerY" priority="998" id="U6z-zM-it8"/>
                                     <constraint firstAttribute="trailing" secondItem="a3w-y2-gCs" secondAttribute="trailing" id="U7b-29-gw8"/>
+                                    <constraint firstItem="a3w-y2-gCs" firstAttribute="top" relation="greaterThanOrEqual" secondItem="mkt-Ew-M9c" secondAttribute="bottom" priority="999" constant="20" id="UHk-SY-gcw"/>
+                                    <constraint firstItem="mkt-Ew-M9c" firstAttribute="top" relation="greaterThanOrEqual" secondItem="MWl-fB-5J1" secondAttribute="top" constant="20" id="ftx-GQ-icp"/>
                                 </constraints>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="0re-dZ-3nH" appends="YES" id="vqt-63-RHk"/>
-                                </connections>
                             </view>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="10f-hQ-Jj1">
                                 <rect key="frame" x="278" y="278" width="44" height="44"/>
@@ -232,6 +213,9 @@
                             <constraint firstItem="10f-hQ-Jj1" firstAttribute="centerY" secondItem="DnU-H2-Gfg" secondAttribute="centerY" id="rRv-ts-Wgf"/>
                             <constraint firstItem="MWl-fB-5J1" firstAttribute="leading" secondItem="DnU-H2-Gfg" secondAttribute="leading" id="zM7-Nz-L4D"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="0re-dZ-3nH" appends="YES" id="xcd-C4-5R7"/>
+                        </connections>
                     </view>
                     <connections>
                         <outlet property="activityIndicatorContainer" destination="10f-hQ-Jj1" id="60R-fd-1Az"/>
@@ -246,6 +230,7 @@
                         <outlet property="remainingTimeLabel" destination="JB4-xm-j36" id="YEG-E8-86E"/>
                         <outlet property="scrubber" destination="Xvz-nG-2DB" id="0Y1-k4-lXo"/>
                         <outlet property="scrubberView" destination="a3w-y2-gCs" id="ziW-6a-c9U"/>
+                        <outlet property="scrubberViewBottomConstraint" destination="Ila-84-Ijg" id="W1F-Ym-EKN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="x1j-pm-PxI" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -21,7 +21,7 @@
     return self;
 }
 
-- (BOOL) beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
+- (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
 {
     return YES;
 }

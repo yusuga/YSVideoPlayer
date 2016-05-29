@@ -12,6 +12,8 @@
 @interface YSEmbedVideoPlayerView : UIView
 
 - (void)setPlayer:(AVPlayer *)player;
+- (AVPlayerLayer *)playerLayer;
+
 - (void)setVideoGravity:(NSString *)videoGravity;
 
 @end

@@ -16,6 +16,9 @@
 #import "YSVideoTimeLabel.h"
 #import "YSVideoPlayerStyleKit.h"
 
+NSString * const YSEmbedVideoPlayerDidChangeContolsViewShownNotification = @"YSEmbedVideoPlayerDidChangeContolsViewShownNotification";
+NSString * const YSEmbedVideoPlayerDidChangeContolsViewShownAnimationDurationKey = @"animationDuration";
+
 typedef NS_ENUM(NSInteger, PlayerStatus) {
     PlayerStatusNone,
     PlayerStatusWait,
@@ -69,7 +72,9 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 @property (weak, nonatomic) IBOutlet UIView *controlView;
 @property (weak, nonatomic) IBOutlet UIButton *controlButton;
 
-@property (weak, nonatomic) IBOutlet UIView *scrubberView;
+@property (weak, nonatomic, readwrite) IBOutlet UIView *scrubberView;
+@property (weak, nonatomic, readwrite) IBOutlet NSLayoutConstraint *scrubberViewBottomConstraint;
+@property (nonatomic) CAGradientLayer *scrubberViewGradientLayer;
 @property (weak, nonatomic) IBOutlet UISlider *scrubber;
 @property (weak, nonatomic) IBOutlet YSVideoTimeLabel *currentTimeLabel;
 @property (weak, nonatomic) IBOutlet YSVideoTimeLabel *remainingTimeLabel;
@@ -161,6 +166,15 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
         button.imageView.transform = CGAffineTransformMakeScale(-1., 1.);
     }
     
+    /* scrubberView */
+    {
+        CAGradientLayer *gradient = [CAGradientLayer layer];
+        gradient.colors = @[(id)[[self class] scrubberViewTopGradientColor].CGColor,
+                            (id)[[self class] scrubberViewBottomGradientColor].CGColor];
+        [self.scrubberView.layer insertSublayer:gradient atIndex:0];
+        self.scrubberViewGradientLayer = gradient;
+    }
+    
     /* Scrubber */
     __weak typeof(self) wself = self;
     [self.KVOController observe:self.scrubber
@@ -219,6 +233,13 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
     }
 }
 
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    
+    self.scrubberViewGradientLayer.frame = self.scrubberView.bounds;
+}
+
 #pragma mark - Application
 
 - (void)applicationWillResignActiveNotification:(NSNotification *)note
@@ -259,6 +280,8 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 
 - (void)hideContolsViewAfterDelay
 {
+    if (self.autoHideControlViewsDisabled) return;
+    
     [self cancelHideContolsViewAfterDelay];
     [self performSelector:@selector(hideContolsView)
                withObject:nil
@@ -279,11 +302,29 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 
 - (void)contolsViewShown:(BOOL)shown animated:(BOOL)animated
 {
-    [UIView animateWithDuration:animated ? 0.3 : 0. animations:^{
+    [self contolsViewShown:shown animated:animated animationDuration:animated ? 0.3 : 0.];
+}
+
+- (void)contolsViewShown:(BOOL)shown animated:(BOOL)animated animationDuration:(NSTimeInterval)animationDuration
+{
+    if (shown) {
+        AVPlayerLayer *layer = self.playerView.playerLayer;
+        if (self.playerStatus != PlayerStatusNone && self.playerStatus != PlayerStatusWait && self.playerStatus != PlayerStatusError) {
+            self.scrubberViewBottomConstraint.constant = layer.bounds.size.height - CGRectGetMaxY(layer.videoRect);
+        } else {
+            self.scrubberViewBottomConstraint.constant = 0.;
+        }
+    }
+    
+    [UIView animateWithDuration:animationDuration animations:^{
         for (UIView *view in [self controlViews]) {
             view.alpha = shown ? 1. : 0.;
         }
     }];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:YSEmbedVideoPlayerDidChangeContolsViewShownNotification
+                                                        object:@(shown)
+                                                      userInfo:@{YSEmbedVideoPlayerDidChangeContolsViewShownAnimationDurationKey : @(animationDuration)}];
 }
 
 - (BOOL)isCotrolsViewShown
@@ -1032,6 +1073,19 @@ static NSString * const kCacheDirctory = @"com.yusuga.YSVideoPlayer";
 + (NSArray *)ignoreDiskCacheExtensions
 {
     return @[@"db", @"db-shm", @"db-wal"];
+}
+
+
+#pragma mark - Appearance
+
++ (UIColor *)scrubberViewTopGradientColor
+{
+    return [UIColor colorWithWhite:0. alpha:0.];
+}
+
++ (UIColor *)scrubberViewBottomGradientColor
+{
+    return [UIColor colorWithWhite:0. alpha:0.4];
 }
 
 @end
